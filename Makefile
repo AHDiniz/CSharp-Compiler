@@ -2,13 +2,11 @@ ANTLR := antlr4
 
 CSC := dotnet
 
-GRAMMAR := $(wilcard src/Grammar/*.g4)
-
-PARSEROUT := src/Parser/
+GRAMMAR := $(wildcard src/*.g4)
 
 OUT := out/
 
-ANTLR_OPT := -Dlanguage=CSharp -o $(PARSEROUT) -lib $(OUT)
+ANTLR_OPT := -Dlanguage=CSharp
 
 EXE := $(OUT)/csharp
 
