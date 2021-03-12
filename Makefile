@@ -1,14 +1,12 @@
 ANTLR := antlr4
 
-GRAMMAR := $(wildcard src/*.g4)
+GRAMMAR := $(wildcard Parser/*.g4)
 
 OUT := out/
 
 ANTLR_OPT := -Dlanguage=CSharp
 
 EXE := $(OUT)csharp
-
-SOURCES := $(wildcard src/*.cs)
 
 main:
 	dotnet build
