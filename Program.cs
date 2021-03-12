@@ -6,7 +6,7 @@ namespace CSharp_Compiler
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Hello C# Compiler!");
         }
     }
 }
