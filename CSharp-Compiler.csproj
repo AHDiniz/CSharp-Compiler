@@ -6,4 +6,8 @@
     <RootNamespace>CSharp_Compiler</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ANTLR4.Runtime.Standard" Version="4.9.2" />
+  </ItemGroup>
+
 </Project>

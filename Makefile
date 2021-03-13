@@ -4,7 +4,7 @@ GRAMMAR := $(wildcard Parser/*.g4)
 
 OUT := out/
 
-ANTLR_OPT := -Dlanguage=CSharp
+ANTLR_OPT := -Dlanguage=CSharp -atn -depend
 
 EXE := $(OUT)csharp
 
@@ -18,4 +18,4 @@ clean:
 	rm $(wildcard Parser/*.cs) $(wildcard Parser/*.interp) $(wildcard Parser/*.tokens)
 
 project_setup:
-	dotnet new console && dotnet add package ANTLR4.Runtime.Standard --version 4.7.2
+	dotnet new console && dotnet add package ANTLR4.Runtime.Standard --version 4.9.2
