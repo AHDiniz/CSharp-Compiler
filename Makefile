@@ -1,21 +1,51 @@
-ANTLR := java -jar antlr-4.9.2-complete.jar
+# C# compiler Makefile project
 
-GRAMMAR := $(wildcard Parser/*.g4)
+# Build variables:
 
-OUT := out/
+VENDOR := vendor
 
-ANTLR_OPT := -Dlanguage=CSharp -atn -depend
+ANTLR := java -jar $(VENDOR)/ANTLR/antlr-4.9.2-complete.jar
+ANTLR_FLAGS := -Dlanguage=Cpp
+GRAMMAR := $(wildcard src/Parser/*.g4)
 
+CC := g++
+CFLAGS := -Llib/ -lantlr4runtime
+
+OUT := bin/
+LIB := lib/
 EXE := $(OUT)csharp
 
-main:
-	dotnet build
+SRC := $(wildcard src/Parser/*.cpp) $(wildcard src/*.cpp)
+INC := -Isrc/Parser -Iinclude -Iinclude/Parser
+PCH := include/pch.h
+
+# Makefile settings:
+
+ifeq ($(debug),)
+	debug := true
+endif
+
+ifeq ($(debug), true)
+	CFLAGS += -Wall -g
+endif
+
+ifeq ($(debug), false)
+	CFLAGS += -w -O2
+endif
+
+# Build rules:
+
+main: pch parser
+	$(CC) $(INC) $(CFLAGS) $(SRC) -o $(EXE) 
+
+pch:
+	$(CC) $(PCH)
 
 parser:
-	$(ANTLR) $(ANTLR_OPT) $(GRAMMAR)
+	$(ANTLR) $(ANTLR_FLAGS) $(GRAMMAR)
 
 clean:
-	rm $(wildcard Parser/*.cs) $(wildcard Parser/*.interp) $(wildcard Parser/*.tokens)
+	rm $(wildcard $(OUT)*)
 
 project_setup:
-	dotnet new console && dotnet add package ANTLR4.Runtime.Standard --version 4.9.2
+	mkdir $(OUT) && mkdir $(LIB)

@@ -1,4 +1,4 @@
-Parser/.antlr
+.antlr/
 .vscode/
-obj/
+lib/
 bin/
