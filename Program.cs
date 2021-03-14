@@ -11,7 +11,7 @@ namespace CSharp_Compiler
         // override default listener behavior
         void ExitKey(CSharpParser.KeywordContext context)
         {
-            Console.WriteLine("Oh, a key!");
+            Console.WriteLine("Found a keyword: ");
         }
 
         override
@@ -73,6 +73,8 @@ namespace CSharp_Compiler
             parser.BuildParseTree = true;
 
             IParseTree tree = parser.compilation_unit();
+
+            Console.WriteLine(tree.ToStringTree(parser));
 
             ParseTreeWalker.Default.Walk(new KeyPrinter(), tree);
 
