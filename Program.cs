@@ -8,7 +8,7 @@ namespace CSharp_Compiler
     class KeyPrinter : CSharpParserBaseListener
     {
         // override default listener behavior
-        void ExitKey(CSharpParser.KeywordContext context )
+        void ExitKey(CSharpParser.KeywordContext context)
         {
             Console.WriteLine("Oh, a key!");
         }

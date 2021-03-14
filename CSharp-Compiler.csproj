@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="ANTLR4.Runtime.Standard" Version="4.9.2" />
+    <CSFile Exclude="Test/*.cs"/>
   </ItemGroup>
 
 </Project>
