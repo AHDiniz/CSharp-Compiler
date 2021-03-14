@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -49,14 +50,19 @@ namespace CSharp_Compiler
         }
     }
 
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Please name the C# file that you would like to compile:");
+                return;
+            }
 
-            ICharStream stream = CharStreams.fromString("class Teste{ void Main(){int varaivel; Console.writer(\"testes\");}}");
+            StreamReader sr = new StreamReader(args[0]);
 
-            //AntlrInputStream inputStream = new AntlrInputStream(stream);
+            ICharStream stream = CharStreams.fromString(sr.ReadToEnd());
 
             CSharpLexer lexer = new CSharpLexer(stream);
 
@@ -65,8 +71,6 @@ namespace CSharp_Compiler
             CSharpParser parser = new CSharpParser(tokenStream);
 
             parser.BuildParseTree = true;
-
-
 
             IParseTree tree = parser.compilation_unit();
 
