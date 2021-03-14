@@ -1,0 +1,33 @@
+﻿<Properties StartupConfiguration="{82FA921E-D6A1-4799-B47F-5FED03CD326B}|Default">
+  <MonoDevelop.Ide.ItemProperties.CSharp-Compiler PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Grammar/CSharpLexer.cs">
+    <Files>
+      <File FileName="Grammar/CSharpLexer.cs" Line="310" Column="34" />
+      <File FileName="Grammar/CSharpLexer.g4" Line="191" Column="38" />
+      <File FileName="Grammar/CSharpParser.cs" Line="1" Column="1" />
+      <File FileName="Grammar/CSharpParser.g4" Line="1" Column="1" />
+      <File FileName="Grammar/CSharpParserBaseListener.cs" Line="1" Column="1" />
+      <File FileName="Grammar/CSharpParserListener.cs" Line="1" Column="1" />
+      <File FileName="Grammar/CSharpLexer.interp" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="CSharp-Compiler" expanded="True">
+            <Node name="CSharp-Compiler" expanded="True">
+              <Node name="Grammar" expanded="True">
+                <Node name="CSharpLexer.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
