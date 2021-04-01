@@ -11,7 +11,7 @@ namespace CSharp_Compiler
         // override default listener behavior
         void ExitKey(CSharpParser.KeywordContext context)
         {
-            Console.WriteLine("Found a keyword: ");
+            Console.WriteLine("Found a keyword");
         }
 
         override
@@ -67,7 +67,7 @@ namespace CSharp_Compiler
             CSharpLexer lexer = new CSharpLexer(stream);
 
             ITokenStream tokenStream = new CommonTokenStream(lexer);
-                
+
             CSharpParser parser = new CSharpParser(tokenStream);
 
             parser.BuildParseTree = true;
