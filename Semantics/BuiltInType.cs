@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generics;
+using System.Collections.Generic;
 using Antlr4.Runtime;
 
 namespace CSharp_Compiler.Semantics
@@ -14,9 +14,8 @@ namespace CSharp_Compiler.Semantics
     {
         private TypeTag typeTag;
 
-        public BuiltInType(Token typeToken, TypeTag typeTag)
+        public BuiltInType(IToken typeToken, TypeTag typeTag) : base(typeToken)
         {
-            base(typeToken);
             this.typeTag = typeTag;
         }
     }

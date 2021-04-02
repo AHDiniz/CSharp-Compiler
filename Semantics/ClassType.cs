@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generics;
+using System.Collections.Generic;
 using Antlr4.Runtime;
 
 namespace CSharp_Compiler.Semantics
@@ -25,9 +25,8 @@ namespace CSharp_Compiler.Semantics
         private ModifierTag modifierTag;
         private ClassTag classTag;
 
-        public ClassType(Token typeToken, ScopeTag scopeTag, ModifierTag modifierTag, ClassTag classTag)
+        public ClassType(IToken typeToken, ScopeTag scopeTag, ModifierTag modifierTag, ClassTag classTag) : base(typeToken)
         {
-            base(typeToken);
             this.scopeTag = scopeTag;
             this.modifierTag = modifierTag;
             this.classTag = classTag;

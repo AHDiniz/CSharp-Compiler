@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generics;
+using System.Collections.Generic;
 using Antlr4.Runtime;
 
 namespace CSharp_Compiler.Semantics
@@ -15,13 +15,13 @@ namespace CSharp_Compiler.Semantics
             VariableDeclaration
         }
 
-        private Token token;
+        private IToken token;
         private List<int> children;
         private Kind kind = Kind.None;
         private Type type;
         private object data;
 
-        public Node(Token token, int[] children, Kind kind, Type type, object data = null)
+        public Node(IToken token, int[] children, Kind kind, Type type, object data = null)
         {
             this.token = token;
             this.children = new List<int>(children);

@@ -1,0 +1,299 @@
+using System;
+using System.Collections.Generic;
+using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
+
+namespace CSharp_Compiler.Semantics
+{
+    public partial class ASTBuilder : CSharpParserBaseListener
+    {
+        public override void EnterExpression(CSharpParser.ExpressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering expression context.");
+        }
+
+        public override void ExitExpression(CSharpParser.ExpressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting expression context.");
+        }
+
+        public override void EnterNon_assignment_expression(CSharpParser.Non_assignment_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering non_assignment_expression context.");
+        }
+
+        public override void ExitNon_assignment_expression(CSharpParser.Non_assignment_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting non_assignment_expression context.");
+        }
+
+        public override void EnterAssignment(CSharpParser.AssignmentContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering assignment context.");
+        }
+
+        public override void ExitAssignment(CSharpParser.AssignmentContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting assignment context.");
+        }
+
+        public override void EnterAssignment_operator(CSharpParser.Assignment_operatorContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering assignment_operator context.");
+        }
+
+        public override void ExitAssignment_operator(CSharpParser.Assignment_operatorContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting assignment_operator context.");
+        }
+
+        public override void EnterConditional_expression(CSharpParser.Conditional_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering conditional_expression context.");
+        }
+
+        public override void ExitConditional_expression(CSharpParser.Conditional_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting conditional_expression context.");
+        }
+
+        public override void EnterNull_coalescing_expression(CSharpParser.Null_coalescing_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering null_coalescing_expression context.");
+        }
+
+        public override void ExitNull_coalescing_expression(CSharpParser.Null_coalescing_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting null_coalescing_expression context.");
+        }
+
+        public override void EnterConditional_or_expression(CSharpParser.Conditional_or_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering conditional_or_expression context.");
+        }
+
+        public override void ExitConditional_or_expression(CSharpParser.Conditional_or_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting conditional_or_expression context.");
+        }
+
+        public override void EnterConditional_and_expression(CSharpParser.Conditional_and_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering conditional_and_expression context.");
+        }
+
+        public override void ExitConditional_and_expression(CSharpParser.Conditional_and_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting conditional_and_expression context.");
+        }
+
+        public override void EnterInclusive_or_expression(CSharpParser.Inclusive_or_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering inclusive_or_expression context.");
+        }
+
+        public override void ExitInclusive_or_expression(CSharpParser.Inclusive_or_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting inclusive_or_expression context.");
+        }
+
+        public override void EnterExclusive_or_expression(CSharpParser.Exclusive_or_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering exclusive_or_expression context.");
+        }
+
+        public override void ExitExclusive_or_expression(CSharpParser.Exclusive_or_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting exclusive_or_expression context.");
+        }
+
+        public override void EnterAnd_expression(CSharpParser.And_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering and_expression context.");
+        }
+
+        public override void ExitAnd_expression(CSharpParser.And_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting and_expression context.");
+        }
+
+        public override void EnterEquality_expression(CSharpParser.Equality_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering equality_expression context.");
+        }
+
+        public override void ExitEquality_expression(CSharpParser.Equality_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting equality_expression context.");
+        }
+
+        public override void EnterRelational_expression(CSharpParser.Relational_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering relational_expression context.");
+        }
+
+        public override void ExitRelational_expression(CSharpParser.Relational_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting relational_expression context.");
+        }
+
+        public override void EnterShift_expression(CSharpParser.Shift_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering shift_expression context.");
+        }
+
+        public override void ExitShift_expression(CSharpParser.Shift_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting shift_expression context.");
+        }
+
+        public override void EnterAdditive_expression(CSharpParser.Additive_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering additive_expression context.");
+        }
+
+        public override void ExitAdditive_expression(CSharpParser.Additive_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting additive_expression context.");
+        }
+
+        public override void EnterMultiplicative_expression(CSharpParser.Multiplicative_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering multiplicative_expression context.");
+        }
+
+        public override void ExitMultiplicative_expression(CSharpParser.Multiplicative_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting multiplicative_expression context.");
+        }
+
+        public override void EnterSwitch_expression(CSharpParser.Switch_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering switch_expression context.");
+        }
+
+        public override void ExitSwitch_expression(CSharpParser.Switch_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting switch_expression context.");
+        }
+
+        public override void EnterSwitch_expression_arms(CSharpParser.Switch_expression_armsContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering switch_expression_arms context.");
+        }
+
+        public override void ExitSwitch_expression_arms(CSharpParser.Switch_expression_armsContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting switch_expression_arms context.");
+        }
+
+        public override void EnterSwitch_expression_arm(CSharpParser.Switch_expression_armContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering switch_expression_arm context.");
+        }
+
+        public override void ExitSwitch_expression_arm(CSharpParser.Switch_expression_armContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting switch_expression_arm context.");
+        }
+
+        public override void EnterRange_expression(CSharpParser.Range_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering range_expression context.");
+        }
+
+        public override void ExitRange_expression(CSharpParser.Range_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting range_expression context.");
+        }
+
+        public override void EnterUnary_expression(CSharpParser.Unary_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering unary_expression context.");
+        }
+
+        public override void ExitUnary_expression(CSharpParser.Unary_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting unary_expression context.");
+        }
+
+        public override void EnterPrimary_expression(CSharpParser.Primary_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering primary_expression context.");
+        }
+
+        public override void ExitPrimary_expression(CSharpParser.Primary_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting primary_expression context.");
+        }
+
+        public override void EnterBracket_expression(CSharpParser.Bracket_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering bracket_expression context.");
+        }
+
+        public override void ExitBracket_expression(CSharpParser.Bracket_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting bracket_expression context.");
+        }
+
+        public override void EnterExpression_list(CSharpParser.Expression_listContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering expression_list context.");
+        }
+
+        public override void ExitExpression_list(CSharpParser.Expression_listContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting expression_list context.");
+        }
+    }
+}

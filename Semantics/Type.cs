@@ -1,16 +1,16 @@
 using System;
-using System.Collections.Generics;
+using System.Collections.Generic;
 using Antlr4.Runtime;
 
 namespace CSharp_Compiler.Semantics
 {
     public class Type
     {
-        private Token typeToken;
+        private IToken typeToken;
 
-        public Type(Token typeToken)
+        public Type(IToken typeToken)
         {
-            this.typeToken = typeToken
+            this.typeToken = typeToken;
         }
     }
 }
