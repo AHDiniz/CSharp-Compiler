@@ -79,5 +79,29 @@ namespace CSharp_Compiler.Semantics
             contextStack.Pop();
             Console.WriteLine("Exiting anonymous_object_initializer context.");
         }
+
+        public override void EnterMember_declarator_list(CSharpParser.Member_declarator_listContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering member_declarator_list context.");
+        }
+
+        public override void ExitMember_declarator_list(CSharpParser.Member_declarator_listContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting member_declarator_list context.");
+        }
+
+        public override void EnterMember_declarator(CSharpParser.Member_declaratorContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering member_declarator context.");
+        }
+
+        public override void ExitMember_declarator(CSharpParser.Member_declaratorContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting member_declarator context.");
+        }
     }
 }

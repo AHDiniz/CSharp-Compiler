@@ -201,5 +201,65 @@ namespace CSharp_Compiler.Semantics
             contextStack.Pop();
             Console.WriteLine("Exiting predefined_type context.");
         }
+
+        public override void EnterUnbound_type_name(CSharpParser.Unbound_type_nameContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering unbound_type_name context.");
+        }
+
+        public override void ExitUnbound_type_name(CSharpParser.Unbound_type_nameContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting unbound_type_name context.");
+        }
+
+        public override void EnterGeneric_dimension_specifier(CSharpParser.Generic_dimension_specifierContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering generic_dimension_specifier context.");
+        }
+
+        public override void ExitGeneric_dimension_specifier(CSharpParser.Generic_dimension_specifierContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting generic_dimension_specifier context.");
+        }
+
+        public override void EnterIsType(CSharpParser.IsTypeContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering isType context.");
+        }
+
+        public override void ExitIsType(CSharpParser.IsTypeContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting isType context.");
+        }
+
+        public override void EnterIsTypePatternArm(CSharpParser.IsTypePatternArmContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering isTypePatternArm context.");
+        }
+
+        public override void ExitIsTypePatternArm(CSharpParser.IsTypePatternArmContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting isTypePatternArm context.");
+        }
+
+        public override void EnterIsTypePatternArms(CSharpParser.IsTypePatternArmsContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering isTypePatternArms context.");
+        }
+
+        public override void ExitIsTypePatternArms(CSharpParser.IsTypePatternArmsContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting isTypePatternArms context.");
+        }
     }
 }
