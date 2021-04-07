@@ -295,5 +295,17 @@ namespace CSharp_Compiler.Semantics
             contextStack.Pop();
             Console.WriteLine("Exiting expression_list context.");
         }
+
+        public override void EnterQuery_expression(CSharpParser.Query_expressionContext context)
+        {
+            contextStack.Push(context);
+            Console.WriteLine("Entering query_expression context.");
+        }
+
+        public override void ExitQuery_expression(CSharpParser.Query_expressionContext context)
+        {
+            contextStack.Pop();
+            Console.WriteLine("Exiting query_expression context.");
+        }
     }
 }
