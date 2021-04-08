@@ -12,7 +12,9 @@ namespace CSharp_Compiler.Semantics
             CodeBlock,
             Assignment,
             EqualityComparision,
-            VariableDeclaration
+            VariableDeclaration,
+            ClassDefinition,
+            Identifier
         }
 
         private IToken token;
@@ -21,13 +23,23 @@ namespace CSharp_Compiler.Semantics
         private Type type;
         private object data;
 
-        public Node(IToken token, int[] children, Kind kind, Type type, object data = null)
+        public object Data
+        {
+            set => this.data = value;
+        }
+
+        public Node(IToken token, Kind kind, Type type, object data = null)
         {
             this.token = token;
-            this.children = new List<int>(children);
+            this.children = new List<int>();
             this.kind = kind;
             this.type = type;
             this.data = data;
+        }
+
+        public void AddChildIndex(int index)
+        {
+            children.Add(index);
         }
     }
 }

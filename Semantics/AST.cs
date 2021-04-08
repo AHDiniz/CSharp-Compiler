@@ -14,5 +14,16 @@ namespace CSharp_Compiler.Semantics
             nodes = new List<Node>();
             head = -1;
         }
+
+        public void AddNode(Node node)
+        {
+            nodes.Add(node);
+            head++;
+        }
+
+        public int NodeIndex(Node node)
+        {
+            return nodes.IndexOf(node);
+        }
     }
 }
