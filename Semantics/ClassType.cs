@@ -9,23 +9,12 @@ namespace CSharp_Compiler.Semantics
         Class, Interface, Struct
     }
 
-    public enum ScopeTag
-    {
-        Public, Private, Protected, Internal, ProtectedInternal, PrivateProtected
-    }
-
-    public enum ModifierTag
-    {
-        Abstract, Const, Extern, Static, Partial, Readonly, Sealed, Unsafe, Virtual, Volatile
-    }
-
     public class ClassType : Type
     {
-        private ScopeTag scopeTag;
-        private ModifierTag modifierTag;
         private ClassTag classTag;
+        private ClassSymbol classData;
 
-        public ClassType(IToken typeToken, ScopeTag scopeTag, ModifierTag modifierTag, ClassTag classTag) : base(typeToken)
+        public ClassType(IToken typeToken, ClassTag classTag) : base(typeToken)
         {
             this.scopeTag = scopeTag;
             this.modifierTag = modifierTag;

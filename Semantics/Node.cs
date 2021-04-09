@@ -14,6 +14,7 @@ namespace CSharp_Compiler.Semantics
             EqualityComparision,
             VariableDeclaration,
             ClassDefinition,
+            ClassBody,
             Identifier
         }
 
