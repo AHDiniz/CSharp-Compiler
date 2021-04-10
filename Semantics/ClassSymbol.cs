@@ -8,17 +8,14 @@ namespace CSharp_Compiler.Semantics
 {
     public class ClassSymbol : Symbol
     {
-        private ClassSymbol baseClass;
-        private ClassSymbol ownerClass;
+        private List<ClassSymbol> baseClasses;
 
-        public ClassSymbol BaseClass { get => baseClass; }
-        public ClassSymbol OwnerClass { get => ownerClass; }
+        public List<ClassSymbol> BaseClasses { get => baseClasses; }
 
-        public ClassSymbol(ModifierFlag mods, ClassSymbol baseClass, ClassSymbol ownerClass)
+        public ClassSymbol(ModifierFlag mods, ClassSymbol[] baseClasses)
         {
             this.modifiers = mods;
-            this.baseClass = baseClass;
-            this.ownerClass = ownerClass;
+            this.baseClasses = new List<ClassSymbol>(baseClasses);
         }
     }
 }

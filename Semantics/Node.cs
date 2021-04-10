@@ -27,7 +27,10 @@ namespace CSharp_Compiler.Semantics
         public object Data
         {
             set => this.data = value;
+            get => data;
         }
+
+        public IToken Token { get => token; }
 
         public Node(IToken token, Kind kind, Type type, object data = null)
         {

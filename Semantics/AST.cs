@@ -25,5 +25,10 @@ namespace CSharp_Compiler.Semantics
         {
             return nodes.IndexOf(node);
         }
+
+        public Node GetNode(int index)
+        {
+            return nodes[index];
+        }
     }
 }

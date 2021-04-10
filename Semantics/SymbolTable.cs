@@ -24,8 +24,10 @@ namespace CSharp_Compiler.Semantics
     {
         private class Scope
         {
-            Dictionary<IToken, Symbol> symbols;
-            int scopeStartNodeIndex;
+            private Dictionary<IToken, Symbol> symbols;
+            private int scopeStartNodeIndex;
+
+            public int CurrentScopeNode { get => scopeStartNodeIndex; }
 
             public Scope(int scopeStartNodeIndex)
             {
@@ -50,6 +52,8 @@ namespace CSharp_Compiler.Semantics
         }
 
         private Stack<Scope> scopes;
+
+        public int CurrentScopeNode { get => scopes.Peek().CurrentScopeNode; }
 
         public SymbolTable()
         {
@@ -78,8 +82,17 @@ namespace CSharp_Compiler.Semantics
 
         public Symbol FindSymbol(IToken key)
         {
-
             return scopes.Peek().FindSymbol(key);
+        }
+
+        public Symbol[] FindSymbols(IToken[] keys)
+        {
+            List<Symbol> symbols = new List<Symbol>();
+            foreach (IToken key in keys)
+            {
+                symbols.Add(FindSymbol(key));
+            }
+            return symbols.ToArray();
         }
     }
 }
