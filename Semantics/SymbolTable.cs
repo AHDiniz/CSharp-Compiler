@@ -29,7 +29,7 @@ namespace CSharp_Compiler.Semantics
 
             public Scope(int scopeStartNodeIndex)
             {
-                this.scopeStartNodeIndex = scopeStartNodeIndex
+                this.scopeStartNodeIndex = scopeStartNodeIndex;
                 symbols = new Dictionary<IToken, Symbol>();
             }
 
@@ -41,6 +41,11 @@ namespace CSharp_Compiler.Semantics
             public void RemoveSymbol(IToken key)
             {
                 symbols.Remove(key);
+            }
+
+            public Symbol FindSymbol(IToken key)
+            {
+                return symbols[key];
             }
         }
 
@@ -63,12 +68,18 @@ namespace CSharp_Compiler.Semantics
 
         public void AddScope(IToken key, Symbol value)
         {
-            scopes.AddSymbol(key, value);
+            scopes.Peek().AddSymbol(key, value);
         }
 
         public void RemoveSymbol(IToken key)
         {
-            scopes.RemoveSymbol(IToken key);
+            scopes.Peek().RemoveSymbol(key);
+        }
+
+        public Symbol FindSymbol(IToken key)
+        {
+
+            return scopes.Peek().FindSymbol(key);
         }
     }
 }

@@ -14,13 +14,13 @@ namespace CSharp_Compiler.Semantics
 
         public ClassSymbol OwnerClass { get => ownerClass; }
         public Symbol Type { get => type; }
-        public object Data { get => data; }
+        public object Value { get => value; }
 
-        public AttributeSymbol(ClassSymbol ownerClass, Symbol type, object data = null)
+        public AttributeSymbol(ClassSymbol ownerClass, Symbol type, object value = null)
         {
             this.ownerClass = ownerClass;
             this.type = type;
-            this.data = data;
+            this.value = value;
         }
     }
 }

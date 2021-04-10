@@ -14,11 +14,10 @@ namespace CSharp_Compiler.Semantics
         private ClassTag classTag;
         private ClassSymbol classData;
 
-        public ClassType(IToken typeToken, ClassTag classTag) : base(typeToken)
+        public ClassType(IToken typeToken, ClassTag classTag, ClassSymbol classData) : base(typeToken)
         {
-            this.scopeTag = scopeTag;
-            this.modifierTag = modifierTag;
             this.classTag = classTag;
+            this.classData = classData;
         }
     }
 }

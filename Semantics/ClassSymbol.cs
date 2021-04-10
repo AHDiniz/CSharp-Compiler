@@ -10,18 +10,15 @@ namespace CSharp_Compiler.Semantics
     {
         private ClassSymbol baseClass;
         private ClassSymbol ownerClass;
-        private List<ClassSymbol> typeParams;
 
         public ClassSymbol BaseClass { get => baseClass; }
         public ClassSymbol OwnerClass { get => ownerClass; }
-        public List<ClassSymbol> TypeParams { get => typeParams; }
 
-        public ClassSymbol(ModifierFlag mods, ClassSymbol baseClass, ClassSymbol ownerClass, ClassSymbol[] typeParams)
+        public ClassSymbol(ModifierFlag mods, ClassSymbol baseClass, ClassSymbol ownerClass)
         {
             this.modifiers = mods;
             this.baseClass = baseClass;
             this.ownerClass = ownerClass;
-            this.typeParams = new List<ClassSymbol>(typeParams);
         }
     }
 }

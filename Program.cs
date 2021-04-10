@@ -33,7 +33,10 @@ namespace CSharp_Compiler
 
             Console.WriteLine(tree.ToStringTree(parser));
 
-            ASTBuilder astBuilder = new ASTBuilder();
+            AST ast = new AST();
+            SymbolTable symbolTable = new SymbolTable();
+
+            ASTBuilder astBuilder = new ASTBuilder(ast, symbolTable);
 
             ParseTreeWalker.Default.Walk(astBuilder, tree);
         }

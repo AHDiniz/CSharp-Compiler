@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
@@ -106,10 +107,15 @@ namespace CSharp_Compiler.Semantics
         {
             Console.WriteLine("Entering class_definition context.");
             
-            Type type = new Type(context.CLASS().GetSymbol());
-            Node classNode = new Node(context.CLASS().GetSymbol(), Node.Kind.ClassDefinition, type);
-            // Enter scope in the symbol table
             // Add class symbol to symbol table: parent class, type parameters and other informations and add to node data
+            // ClassSymbol classSymbol = new ClassSymbol();
+            
+            Type type = new Type(context.CLASS().Symbol);
+            Node classNode = new Node(context.CLASS().Symbol, Node.Kind.ClassDefinition, type);
+            int classNodeIndex = ast.NodeIndex(classNode);
+            
+            // Enter scope in the symbol table
+            symbolTable.EnterScope(classNodeIndex);
             
             // Adding information to the abstract syntax tree:
 
@@ -117,16 +123,16 @@ namespace CSharp_Compiler.Semantics
             ast.AddNode(classNode);
 
             // Adding an identifier node as a class node child:
-            IdentifierContext idCtx = context.identifier();
-            List<ITerminalNode> terminalNodes = idCtx.GetTokens();
+            CSharpParser.IdentifierContext idCtx = context.identifier();
+            List<ITerminalNode> terminalNodes = new List<ITerminalNode>(idCtx.GetTokens(0));
 
-            Node idNode = new Node(terminalNodes[0].GetSymbol(), Node.Kind.Identifier, null);
-            ast.AddNode(idNode);
-            int idNodeIndex = ast.NodeIndex(idNode);
-            classNode.AddChildIndex(idNodeIndex);
+            // Node idNode = new Node(terminalNodes[0].Symbol, Node.Kind.Identifier, null);
+            // ast.AddNode(idNode);
+            // int idNodeIndex = ast.NodeIndex(idNode);
+            // classNode.AddChildIndex(idNodeIndex);
 
             // Adding the class body node as a class node child:
-            Class_bodyContext bodyCtx = context.class_body();
+            CSharpParser.Class_bodyContext bodyCtx = context.class_body();
             Node bodyNode = new Node(null, Node.Kind.ClassBody, null);
             ast.AddNode(bodyNode);
             int bodyNodeIndex = ast.NodeIndex(bodyNode);
@@ -136,6 +142,7 @@ namespace CSharp_Compiler.Semantics
         public override void ExitClass_definition(CSharpParser.Class_definitionContext context)
         {
             // Exit class scope in the symbol table
+            symbolTable.ExitScope();
         }
 
         public override void EnterClass_member_declaration(CSharpParser.Class_member_declarationContext context)
@@ -143,13 +150,14 @@ namespace CSharp_Compiler.Semantics
             // Getting the current class node from symbol table in scope:
 
             // Getting the member modifiers:
-            All_member_modifiersContext modsCtx = context.all_member_modifiers();
+
+            CSharpParser.All_member_modifiersContext modsCtx = context.all_member_modifiers();
             if (modsCtx != null)
             {
-                All_member_modifier[] modifiers = modsCtx.all_member_modifier();
-                foreach (All_member_modifier modifier in modifiers)
+                CSharpParser.All_member_modifierContext[] modifiers = modsCtx.all_member_modifier();
+                foreach (CSharpParser.All_member_modifierContext modifier in modifiers)
                 {
-                    
+
                 }
             }
         }

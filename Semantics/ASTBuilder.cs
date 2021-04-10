@@ -10,16 +10,18 @@ namespace CSharp_Compiler.Semantics
     {
         private Stack<ParserRuleContext> contextStack;
         private AST ast;
+        private SymbolTable symbolTable;
 
         public AST AbstractSyntaxTree
         {
             get => ast;
         }
 
-        public ASTBuilder() : base()
+        public ASTBuilder(AST ast, SymbolTable symbolTable) : base()
         {
             contextStack = new Stack<ParserRuleContext>();
-            ast = new AST();
+            this.ast = ast;
+            this.symbolTable = symbolTable;
         }
     }
 }
