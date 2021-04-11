@@ -18,6 +18,11 @@ namespace CSharp_Compiler.Semantics
         protected ModifierFlag modifiers;
 
         public ModifierFlag Modifiers { get => modifiers; }
+
+        public Symbol(ModifierFlag flags)
+        {
+            this.modifiers = flags;
+        }
     }
 
     public class SymbolTable
@@ -70,7 +75,7 @@ namespace CSharp_Compiler.Semantics
             scopes.Pop();
         }
 
-        public void AddScope(IToken key, Symbol value)
+        public void AddSymbol(IToken key, Symbol value)
         {
             scopes.Peek().AddSymbol(key, value);
         }

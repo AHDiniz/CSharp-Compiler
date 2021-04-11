@@ -12,9 +12,8 @@ namespace CSharp_Compiler.Semantics
 
         public List<ClassSymbol> BaseClasses { get => baseClasses; }
 
-        public ClassSymbol(ModifierFlag mods, ClassSymbol[] baseClasses)
+        public ClassSymbol(ModifierFlag mods, ClassSymbol[] baseClasses) : base(mods)
         {
-            this.modifiers = mods;
             this.baseClasses = new List<ClassSymbol>(baseClasses);
         }
     }

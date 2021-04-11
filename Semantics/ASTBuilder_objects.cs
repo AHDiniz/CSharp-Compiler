@@ -95,7 +95,7 @@ namespace CSharp_Compiler.Semantics
 
             CSharpParser.All_member_modifierContext[] allModsCtxs = context.all_member_modifier();
 
-            foreach (All_member_modifierContext mod in allModsCtxs)
+            foreach (CSharpParser.All_member_modifierContext mod in allModsCtxs)
             {
                 modifiersTokens.Add(mod.Start);
             }
@@ -122,7 +122,7 @@ namespace CSharp_Compiler.Semantics
                         CSharpParser.IdentifierContext[] typeIDCtxs = typeNameCtx.identifier();
                         foreach (CSharpParser.IdentifierContext id in typeIDCtxs)
                         {
-                            baseTokens.Add(id);
+                            baseTokens.Add(id.Start);
                         }
                     }
                     else
@@ -132,12 +132,14 @@ namespace CSharp_Compiler.Semantics
                 }
             }
 
-            ClassSymbol[] baseSymbols = symbolTable.FindSymbols(baseTokens);
+            Symbol[] baseSymbols = symbolTable.FindSymbols(baseTokens.ToArray());
+            List<ClassSymbol> baseClassSymbols = new List<ClassSymbol>();
+            foreach (Symbol bs in baseSymbols) baseClassSymbols.Add((ClassSymbol)bs);
 
             Symbol.ModifierFlag modFlags = TreatModTokens();
             modifiersTokens.Clear();
 
-            ClassSymbol classSymbol = new ClassSymbol(modFlags, baseSymbols);
+            ClassSymbol classSymbol = new ClassSymbol(modFlags, baseClassSymbols.ToArray());
             
             Type type = new Type(context.CLASS().Symbol);
             Node classNode = new Node(context.CLASS().Symbol, Node.Kind.ClassDefinition, type);
@@ -157,7 +159,8 @@ namespace CSharp_Compiler.Semantics
 
             // Adding the class body node as a class node child:
             CSharpParser.Class_bodyContext bodyCtx = context.class_body();
-            Node bodyNode = new Node(idToken, Node.Kind.ClassBody, classSymbol);
+            ClassType classType = new ClassType(idToken, ClassTag.Class, classSymbol);
+            Node bodyNode = new Node(idToken, Node.Kind.ClassBody, classType);
             ast.AddNode(bodyNode);
             int bodyNodeIndex = ast.NodeIndex(bodyNode);
             classNode.AddChildIndex(bodyNodeIndex);
@@ -171,27 +174,13 @@ namespace CSharp_Compiler.Semantics
             symbolTable.ExitScope();
         }
 
-        public override void EnterClass_member_declaration(CSharpParser.Class_member_declarationContext context)
+        public override void EnterDestructor_definition(CSharpParser.Destructor_definitionContext context)
         {
             // Getting the current class node from symbol table in scope:
             Node currentClassScopeNode = ast.GetNode(symbolTable.CurrentScopeNode);
-            ClassSymbol classSymbol = (ClassSymbol)Node.Data;
-            IToken classToken = Node.Token;
-
-            // Getting the member modifiers:
-            CSharpParser.Common_member_declarationContext commonMemberCtx = context.common_member_declaration();
-            if (commonMemberCtx != null)
-            {
-
-            }
-            else
-            {
-                CSharpParser.Destructor_definitionContext destructorCtx = context.destructor_definition();
-                if (destructorCtx != null)
-                {
-                    
-                }
-            }
+            ClassType classType = (ClassType)(currentClassScopeNode.Type);
+            ClassSymbol classSymbol = classType.Symbol;
+            IToken classToken = currentClassScopeNode.Token;
         }
     }
 }

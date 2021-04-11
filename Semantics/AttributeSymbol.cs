@@ -16,7 +16,7 @@ namespace CSharp_Compiler.Semantics
         public Symbol Type { get => type; }
         public object Value { get => value; }
 
-        public AttributeSymbol(ClassSymbol ownerClass, Symbol type, object value = null)
+        public AttributeSymbol(ModifierFlag mods, ClassSymbol ownerClass, Symbol type, object value = null) : base(mods)
         {
             this.ownerClass = ownerClass;
             this.type = type;
