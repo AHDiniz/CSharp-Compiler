@@ -170,17 +170,69 @@ namespace CSharp_Compiler.Semantics
 
         public override void ExitClass_definition(CSharpParser.Class_definitionContext context)
         {
+            Console.WriteLine("Exiting class_definition context.");
             // Exit class scope in the symbol table
             symbolTable.ExitScope();
         }
 
         public override void EnterDestructor_definition(CSharpParser.Destructor_definitionContext context)
         {
+            Console.WriteLine("Entering descrutor_definition context.");
+
             // Getting the current class node from symbol table in scope:
             Node currentClassScopeNode = ast.GetNode(symbolTable.CurrentScopeNode);
             ClassType classType = (ClassType)(currentClassScopeNode.Type);
             ClassSymbol classSymbol = classType.Symbol;
             IToken classToken = currentClassScopeNode.Token;
+
+            // Getting the destructor modifiers:
+            Symbol.ModifierFlag modFlags = TreatModTokens();
+            modifiersTokens.Clear();
+        }
+
+        public override void EnterConstructor_declaration(CSharpParser.Constructor_declarationContext context)
+        {
+            Console.WriteLine("Entering constructor_declaration context.");
+
+            // Getting the current class node from symbol table in scope:
+            Node currentClassScopeNode = ast.GetNode(symbolTable.CurrentScopeNode);
+            ClassType classType = (ClassType)(currentClassScopeNode.Type);
+            ClassSymbol classSymbol = classType.Symbol;
+            IToken classToken = currentClassScopeNode.Token;
+
+            // Getting the destructor modifiers:
+            Symbol.ModifierFlag modFlags = TreatModTokens();
+            modifiersTokens.Clear();
+        }
+
+        public override void EnterConstant_declaration(CSharpParser.Constant_declarationContext context)
+        {
+            Console.WriteLine("Entering constant_declaration context.");
+
+            // Getting all the modifiers:
+            Symbol.ModifierFlag modFlags = TreatModTokens();
+            modifiersTokens.Clear();
+            modFlags |= Symbol.ModifierFlag.Const;
+        }
+
+        public override void EnterTyped_member_declaration(CSharpParser.Typed_member_declaration context)
+        {
+            Console.WriteLine("Entering typed_member_declaration context.");
+
+            // Getting all the modifiers:
+            Symbol.ModifierFlag modFlags = TreatModTokens();
+            modifiersTokens.Clear();
+            if (context.REF() != null) modFlags |= Symbol.ModifierFlag.Ref;
+            if (context.READONLY() != null) modFlags |= Symbol.ModifierFlag.ReadOnly;
+        }
+
+        public override void EnterEvent_declaration(CSharpParser.Event_declaration context)
+        {
+            Console.WriteLine("Entering event_declaration context.");
+
+            // Getting all the modifiers:
+            Symbol.ModifierFlag modFlags = TreatModTokens();
+            modifiersTokens.Clear();
         }
     }
 }

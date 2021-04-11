@@ -12,7 +12,7 @@ namespace CSharp_Compiler.Semantics
         public enum ModifierFlag
         {
             None, New, Public, Protected, ReadOnly, Volatile, Virtual, Sealed,
-            Override, Abstract, Static, Unsafe, Extern, Partial, Async
+            Override, Abstract, Static, Unsafe, Extern, Partial, Async, Ref, Const
         }
 
         protected ModifierFlag modifiers;
@@ -29,15 +29,19 @@ namespace CSharp_Compiler.Semantics
     {
         private class Scope
         {
+            private Scope parentScope;
+            private Stack<Scope> nestedScopes;
             private Dictionary<IToken, Symbol> symbols;
             private int scopeStartNodeIndex;
 
             public int CurrentScopeNode { get => scopeStartNodeIndex; }
 
-            public Scope(int scopeStartNodeIndex)
+            public Scope(int scopeStartNodeIndex, Scope parentScope = null)
             {
+                this.parentScope = parentScope;
                 this.scopeStartNodeIndex = scopeStartNodeIndex;
-                symbols = new Dictionary<IToken, Symbol>();
+                this.nestedScopes = new Stack<Scopes>();
+                this.symbols = new Dictionary<IToken, Symbol>();
             }
 
             public void AddSymbol(IToken key, Symbol value)
@@ -54,40 +58,54 @@ namespace CSharp_Compiler.Semantics
             {
                 return symbols[key];
             }
+
+            public Scope EnterScope(int scopeStartNodeIndex)
+            {
+                Scope s = new Scope(scopeStartNodeIndex, this);
+                nestedScopes.Push(s);
+                return s;
+            }
+
+            public Scope ExitScope()
+            {
+                return this.parent;
+            }
         }
 
-        private Stack<Scope> scopes;
+        private Scope mainScope;
+        private Scope currentScope;
 
-        public int CurrentScopeNode { get => scopes.Peek().CurrentScopeNode; }
+        public int CurrentScopeNode { get => currentScope.CurrentScopeNode; }
 
         public SymbolTable()
         {
-            scopes = new Stack<Scope>();
+            mainScope = new Scope(-1);
+            currentScope = mainScope;
         }
 
         public void EnterScope(int nodeIndex)
         {
-            scopes.Push(new Scope(nodeIndex));
+            currentScope = currentScope.EnterScope(nodeIndex);
         }
 
         public void ExitScope()
         {
-            scopes.Pop();
+            currentScope = currentScope.ExitScope();
         }
 
         public void AddSymbol(IToken key, Symbol value)
         {
-            scopes.Peek().AddSymbol(key, value);
+            currentScope.AddSymbol(key, value);
         }
 
         public void RemoveSymbol(IToken key)
         {
-            scopes.Peek().RemoveSymbol(key);
+            currentScope.RemoveSymbol(key);
         }
 
         public Symbol FindSymbol(IToken key)
         {
-            return scopes.Peek().FindSymbol(key);
+            return currentScope.FindSymbol(key);
         }
 
         public Symbol[] FindSymbols(IToken[] keys)
