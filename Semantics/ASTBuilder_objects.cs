@@ -139,7 +139,7 @@ namespace CSharp_Compiler.Semantics
             Symbol.ModifierFlag modFlags = TreatModTokens();
             modifiersTokens.Clear();
 
-            ClassSymbol classSymbol = new ClassSymbol(modFlags, baseClassSymbols.ToArray());
+            ClassSymbol classSymbol = new ClassSymbol(modFlags, baseClassSymbols.ToArray(), ClassTag.Class);
             
             Type type = new Type(context.CLASS().Symbol);
             Node classNode = new Node(context.CLASS().Symbol, Node.Kind.ClassDefinition, type);
@@ -188,6 +188,28 @@ namespace CSharp_Compiler.Semantics
             // Getting the destructor modifiers:
             Symbol.ModifierFlag modFlags = TreatModTokens();
             modifiersTokens.Clear();
+
+            // Creating the destructor symbol:
+            DestructorSymbol destructorSymbol = new DestructorSymbol(modFlags, classSymbol);
+
+            // Creating the destructor AST node:
+            BuiltInType destructorType = new BuiltInType(classToken, BuiltInType.TypeTag.Destructor);
+            IToken destructorToken = context.TILDE().Symbol;
+            Node destructorNode = new Node(destructorToken, Node.Kind.Destructor, destructorType, destructorSymbol);
+            ast.AddNode(destructorNode);
+            
+            // Adding the destructor symbol to the symbol table:
+            int destructorNodeIndex = ast.NodeIndex(destructorNode);
+            symbolTable.EnterScope(destructorNodeIndex);
+            symbolTable.AddSymbol(destructorSymbol);
+        }
+
+        public override void ExitDestructor_definition(CSharpParser.Destructor_definitionContext context)
+        {
+            Console.WriteLine("Exiting destructor_definition context.");
+
+            // Exiting the destructor scope:
+            symbolTable.ExitScope();
         }
 
         public override void EnterConstructor_declaration(CSharpParser.Constructor_declarationContext context)
@@ -203,6 +225,27 @@ namespace CSharp_Compiler.Semantics
             // Getting the destructor modifiers:
             Symbol.ModifierFlag modFlags = TreatModTokens();
             modifiersTokens.Clear();
+
+            // Creating the destructor symbol:
+            ConstructorSymbol constructorSymbol = new ConstructorSymbol(modFlags, classSymbol);
+
+            // Creating the destructor AST node:
+            BuiltInType constructorType = new BuiltInType(classToken, BuiltInType.TypeTag.Constructor);
+            Node constructorNode = new Node(classToken, Node.Kind.Constructor, constructorType, constructorSymbol);
+            ast.AddNode(constructorNode);
+            
+            // Adding the destructor symbol to the symbol table:
+            int constructorNodeIndex = ast.NodeIndex(constructorNode);
+            symbolTable.EnterScope(constructorNodeIndex);
+            symbolTable.AddSymbol(constructorSymbol);
+        }
+
+        public override void ExitConstructor_declaration(CSharpParser.Constructor_declarationContext context)
+        {
+            Console.WriteLine("Entering constructor_declaration context.");
+
+            // Exiting the constructor scope:
+            symbolTable.ExitScope();
         }
 
         public override void EnterConstant_declaration(CSharpParser.Constant_declarationContext context)
@@ -213,6 +256,18 @@ namespace CSharp_Compiler.Semantics
             Symbol.ModifierFlag modFlags = TreatModTokens();
             modifiersTokens.Clear();
             modFlags |= Symbol.ModifierFlag.Const;
+
+            // Getting the type of the constant:
+
+            // Getting the name of the constant:
+
+            // Creating the constant symbol:
+
+            // Creating the constant node:
+
+            // Adding the node to the AST:
+
+            // Adding the symbol to the symbol table:
         }
 
         public override void EnterTyped_member_declaration(CSharpParser.Typed_member_declaration context)

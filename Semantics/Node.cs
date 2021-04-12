@@ -15,7 +15,9 @@ namespace CSharp_Compiler.Semantics
             VariableDeclaration,
             ClassDefinition,
             ClassBody,
-            Identifier
+            Identifier,
+            Constructor,
+            Destructor
         }
 
         private IToken token;

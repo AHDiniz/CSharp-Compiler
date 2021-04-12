@@ -34,38 +34,68 @@ namespace CSharp_Compiler.Semantics
 
         public override void EnterType_(CSharpParser.Type_Context context)
         {
+            Console.WriteLine("Entering type_ context.");
+
+            // Getting the current modifiers:
+            Symbol.ModifierFlag mods = TreatModTokens();
+            modifiersTokens.Clear();
             
-            Console.WriteLine("Entering namespace_or_type_name context.");
+            // Defining the type that's being read:
+            CSharpParser.Base_typeContext baseTypeCtx = context.base_type();
+            
+            CSharpParser.Simple_typeContext simpleType = baseTypeCtx.simple_type();
+            if (simpleType != null)
+            {
+                IToken typeToken = baseTypeCtx.Start;
+                TypeTag typeTag = TreatSimpleTypeToken(typeToken.Text);
+                currentType = new BuiltInType(typeToken, typeTag);
+            }
+            else
+            {
+                CSharpParser.Class_typeContext classType = baseTypeCtx.class_type();
+                if (classType != null)
+                {
+                    CSharpParser.Namespace_or_type_nameContext typeName = classType.namespace_or_type_name();
+                    if (typeName != null)
+                    {
+                        IToken typeIDtoken = typeName.Start;
+                        ClassSymbol typeSymbol = (ClassSymbol)(symbolTable.FindSymbol(typeIDToken));
+                        if (typeSymbol != null)
+                        {
+                            ClassTag tag = typeSymbol.Tag;
+                            currentType = new ClassType(typeIDToken, tag, typeSymbol);
+                        } // Otherwise, needs to do another pass to fix symbol table
+                    }
+                    else
+                    {
+                        IToken typeToken = classType.Start;
+                        TypeTag typeTag = TreatSimpleTypeToken(typeToken.Text);
+                        currentType = new BuiltInType(typeToken, typeTag);
+                    }
+                }
+                else
+                {
+                    CSharpParser.Tuple_typeContext tupleType = baseTypeCtx.tuple_type();
+                    if (tupleType != null)
+                    {
+                        CSharpParser.Tuple_elementContext[] tupleElems = tupleType.tuple_element();
+                        foreach (CSharpParser.Tuple_elementContext tupleElem in tupleElems)
+                        {
+                            
+                        }
+                    }
+                    else
+                    {
+                        currentType = new BuiltInType(baseTypeCtx.VOID().Symbol, TypeTag.Void, true);
+                    }
+                }
+            }
         }
 
         public override void ExitType_(CSharpParser.Type_Context context)
         {
             
             Console.WriteLine("Exiting type_ context.");
-        }
-
-        public override void EnterBase_type(CSharpParser.Base_typeContext context)
-        {
-            
-            Console.WriteLine("Entering base_type context.");
-        }
-
-        public override void ExitBase_type(CSharpParser.Base_typeContext context)
-        {
-            
-            Console.WriteLine("Exiting base_type context.");
-        }
-
-        public override void EnterTuple_type(CSharpParser.Tuple_typeContext context)
-        {
-            
-            Console.WriteLine("Entering tuple_type context.");
-        }
-
-        public override void ExitTuple_type(CSharpParser.Tuple_typeContext context)
-        {
-            
-            Console.WriteLine("Exiting tuple_type context.");
         }
 
         public override void EnterTuple_element(CSharpParser.Tuple_elementContext context)
@@ -80,54 +110,6 @@ namespace CSharp_Compiler.Semantics
             Console.WriteLine("Exiting tuple_element context.");
         }
 
-        public override void EnterSimple_type(CSharpParser.Simple_typeContext context)
-        {
-            
-            Console.WriteLine("Entering simple_type context.");
-        }
-
-        public override void ExitSimple_type(CSharpParser.Simple_typeContext context)
-        {
-            
-            Console.WriteLine("Exiting simple_type context.");
-        }
-
-        public override void EnterNumeric_type(CSharpParser.Numeric_typeContext context)
-        {
-            
-            Console.WriteLine("Entering numeric_type context.");
-        }
-
-        public override void ExitNumeric_type(CSharpParser.Numeric_typeContext context)
-        {
-            
-            Console.WriteLine("Exiting numeric_type context.");
-        }
-
-        public override void EnterIntegral_type(CSharpParser.Integral_typeContext context)
-        {
-            
-            Console.WriteLine("Entering integral_type context.");
-        }
-
-        public override void ExitIntegral_type(CSharpParser.Integral_typeContext context)
-        {
-            
-            Console.WriteLine("Exiting integral_type context.");
-        }
-
-        public override void EnterFloating_point_type(CSharpParser.Floating_point_typeContext context)
-        {
-            
-            Console.WriteLine("Entering floating_point_type context.");
-        }
-
-        public override void ExitFloating_point_type(CSharpParser.Floating_point_typeContext context)
-        {
-            
-            Console.WriteLine("Exiting floating_point_type context.");
-        }
-
         public override void EnterClass_type(CSharpParser.Class_typeContext context)
         {
             
@@ -138,18 +120,6 @@ namespace CSharp_Compiler.Semantics
         {
             
             Console.WriteLine("Exiting class_type context.");
-        }
-
-        public override void EnterType_argument_list(CSharpParser.Type_argument_listContext context)
-        {
-            
-            Console.WriteLine("Entering type_argument_list context.");
-        }
-
-        public override void ExitType_argument_list(CSharpParser.Type_argument_listContext context)
-        {
-            
-            Console.WriteLine("Exiting type_argument_list context.");
         }
 
         public override void EnterArgument_list(CSharpParser.Argument_listContext context)
