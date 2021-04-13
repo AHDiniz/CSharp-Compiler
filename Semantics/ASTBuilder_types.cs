@@ -41,55 +41,7 @@ namespace CSharp_Compiler.Semantics
             modifiersTokens.Clear();
             
             // Defining the type that's being read:
-            CSharpParser.Base_typeContext baseTypeCtx = context.base_type();
-            
-            CSharpParser.Simple_typeContext simpleType = baseTypeCtx.simple_type();
-            if (simpleType != null)
-            {
-                IToken typeToken = baseTypeCtx.Start;
-                TypeTag typeTag = TreatSimpleTypeToken(typeToken.Text);
-                currentType = new BuiltInType(typeToken, typeTag);
-            }
-            else
-            {
-                CSharpParser.Class_typeContext classType = baseTypeCtx.class_type();
-                if (classType != null)
-                {
-                    CSharpParser.Namespace_or_type_nameContext typeName = classType.namespace_or_type_name();
-                    if (typeName != null)
-                    {
-                        IToken typeIDtoken = typeName.Start;
-                        ClassSymbol typeSymbol = (ClassSymbol)(symbolTable.FindSymbol(typeIDToken));
-                        if (typeSymbol != null)
-                        {
-                            ClassTag tag = typeSymbol.Tag;
-                            currentType = new ClassType(typeIDToken, tag, typeSymbol);
-                        } // Otherwise, needs to do another pass to fix symbol table
-                    }
-                    else
-                    {
-                        IToken typeToken = classType.Start;
-                        TypeTag typeTag = TreatSimpleTypeToken(typeToken.Text);
-                        currentType = new BuiltInType(typeToken, typeTag);
-                    }
-                }
-                else
-                {
-                    CSharpParser.Tuple_typeContext tupleType = baseTypeCtx.tuple_type();
-                    if (tupleType != null)
-                    {
-                        CSharpParser.Tuple_elementContext[] tupleElems = tupleType.tuple_element();
-                        foreach (CSharpParser.Tuple_elementContext tupleElem in tupleElems)
-                        {
-                            
-                        }
-                    }
-                    else
-                    {
-                        currentType = new BuiltInType(baseTypeCtx.VOID().Symbol, TypeTag.Void, true);
-                    }
-                }
-            }
+            currentType = TreatTypeContext(context);
         }
 
         public override void ExitType_(CSharpParser.Type_Context context)

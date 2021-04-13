@@ -104,6 +104,10 @@ namespace CSharp_Compiler.Semantics
         public override void EnterClass_definition(CSharpParser.Class_definitionContext context)
         {
             Console.WriteLine("Entering class_definition context.");
+
+            // Getting the current scope node:
+            
+
             // Add class symbol to symbol table: parent class, owner class and other informations and add to node data:
             
             // Getting the parent classes:
@@ -197,6 +201,9 @@ namespace CSharp_Compiler.Semantics
             IToken destructorToken = context.TILDE().Symbol;
             Node destructorNode = new Node(destructorToken, Node.Kind.Destructor, destructorType, destructorSymbol);
             ast.AddNode(destructorNode);
+
+            // Adding the new node as a child of the class node:
+            currentClassScopeNode.AddChildIndex(ast.NodeIndex(destructorNode));
             
             // Adding the destructor symbol to the symbol table:
             int destructorNodeIndex = ast.NodeIndex(destructorNode);
@@ -233,6 +240,9 @@ namespace CSharp_Compiler.Semantics
             BuiltInType constructorType = new BuiltInType(classToken, BuiltInType.TypeTag.Constructor);
             Node constructorNode = new Node(classToken, Node.Kind.Constructor, constructorType, constructorSymbol);
             ast.AddNode(constructorNode);
+
+            // Adding the new node as a child of the class node:
+            currentClassScopeNode.AddChildIndex(ast.NodeIndex(constructorNode));
             
             // Adding the destructor symbol to the symbol table:
             int constructorNodeIndex = ast.NodeIndex(constructorNode);
@@ -252,22 +262,38 @@ namespace CSharp_Compiler.Semantics
         {
             Console.WriteLine("Entering constant_declaration context.");
 
+            // Getting the current scope parent node:
+            Node parentNode = ast.GetNode(symbolTable.CurrentScopeNode);
+            Node.Kind parentKind = parentNode.Kind;
+
             // Getting all the modifiers:
             Symbol.ModifierFlag modFlags = TreatModTokens();
             modifiersTokens.Clear();
             modFlags |= Symbol.ModifierFlag.Const;
 
-            // Getting the type of the constant:
+            // Getting the name of the constant(s):
+            CSharpParser.Constant_declaratorContext[] declarators = context.constant_declarators().constant_declarator();
+            foreach (CSharpParser.Constant_declaratorContext declarator in declarators)
+            {
+                CSharpParser.IdentifierContext idCtx = declarator.identifier();
+                IToken idToken = idCtx.Start;
 
-            // Getting the name of the constant:
+                // Creating the constant symbol:
+                if (parentKind == Node.Kind.ClassBody)
+                {
+                    // Creating a class member variable
+                }
+                else
+                {
+                    // Creating a method variable
+                }
 
-            // Creating the constant symbol:
+                // Creating the constant node:
 
-            // Creating the constant node:
+                // Adding the node to the AST:
 
-            // Adding the node to the AST:
-
-            // Adding the symbol to the symbol table:
+                // Adding the symbol to the symbol table:
+            }
         }
 
         public override void EnterTyped_member_declaration(CSharpParser.Typed_member_declaration context)

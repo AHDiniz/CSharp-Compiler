@@ -24,6 +24,11 @@ namespace CSharp_Compiler.Semantics
             modifiersTokens = new List<IToken>();
             this.ast = ast;
             this.symbolTable = symbolTable;
+
+            Node initialNode = new Node(null, Node.Kind.MainScope, null);
+            this.ast.AddNode(initialNode);
+
+            this.symbolTable.EnterScope(ast.NodeIndex(initialNode));
         }
 
         private Symbol.ModifierFlag TreatModTokens()
