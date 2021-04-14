@@ -12,7 +12,7 @@ namespace CSharp_Compiler.Semantics
 
         public TupleSymbol(ModifierFlag flags, Symbol[] subMembers) : base(flags)
         {
-            subMembers = new List<Symbol>(subMembers);
+            this.subMembers = new List<Symbol>(subMembers);
         }
     }
 }

@@ -197,7 +197,7 @@ namespace CSharp_Compiler.Semantics
             DestructorSymbol destructorSymbol = new DestructorSymbol(modFlags, classSymbol);
 
             // Creating the destructor AST node:
-            BuiltInType destructorType = new BuiltInType(classToken, BuiltInType.TypeTag.Destructor);
+            BuiltInType destructorType = new BuiltInType(classToken, TypeTag.Destructor);
             IToken destructorToken = context.TILDE().Symbol;
             Node destructorNode = new Node(destructorToken, Node.Kind.Destructor, destructorType, destructorSymbol);
             ast.AddNode(destructorNode);
@@ -208,7 +208,7 @@ namespace CSharp_Compiler.Semantics
             // Adding the destructor symbol to the symbol table:
             int destructorNodeIndex = ast.NodeIndex(destructorNode);
             symbolTable.EnterScope(destructorNodeIndex);
-            symbolTable.AddSymbol(destructorSymbol);
+            symbolTable.AddSymbol(destructorToken, destructorSymbol);
         }
 
         public override void ExitDestructor_definition(CSharpParser.Destructor_definitionContext context)
@@ -237,7 +237,7 @@ namespace CSharp_Compiler.Semantics
             ConstructorSymbol constructorSymbol = new ConstructorSymbol(modFlags, classSymbol);
 
             // Creating the destructor AST node:
-            BuiltInType constructorType = new BuiltInType(classToken, BuiltInType.TypeTag.Constructor);
+            BuiltInType constructorType = new BuiltInType(classToken, TypeTag.Constructor);
             Node constructorNode = new Node(classToken, Node.Kind.Constructor, constructorType, constructorSymbol);
             ast.AddNode(constructorNode);
 
@@ -247,7 +247,7 @@ namespace CSharp_Compiler.Semantics
             // Adding the destructor symbol to the symbol table:
             int constructorNodeIndex = ast.NodeIndex(constructorNode);
             symbolTable.EnterScope(constructorNodeIndex);
-            symbolTable.AddSymbol(constructorSymbol);
+            symbolTable.AddSymbol(classToken, constructorSymbol);
         }
 
         public override void ExitConstructor_declaration(CSharpParser.Constructor_declarationContext context)
@@ -264,7 +264,7 @@ namespace CSharp_Compiler.Semantics
 
             // Getting the current scope parent node:
             Node parentNode = ast.GetNode(symbolTable.CurrentScopeNode);
-            Node.Kind parentKind = parentNode.Kind;
+            Node.Kind parentKind = parentNode.NodeKind;
 
             // Getting all the modifiers:
             Symbol.ModifierFlag modFlags = TreatModTokens();
@@ -296,7 +296,7 @@ namespace CSharp_Compiler.Semantics
             }
         }
 
-        public override void EnterTyped_member_declaration(CSharpParser.Typed_member_declaration context)
+        public override void EnterTyped_member_declaration(CSharpParser.Typed_member_declarationContext context)
         {
             Console.WriteLine("Entering typed_member_declaration context.");
 
@@ -307,7 +307,7 @@ namespace CSharp_Compiler.Semantics
             if (context.READONLY() != null) modFlags |= Symbol.ModifierFlag.ReadOnly;
         }
 
-        public override void EnterEvent_declaration(CSharpParser.Event_declaration context)
+        public override void EnterEvent_declaration(CSharpParser.Event_declarationContext context)
         {
             Console.WriteLine("Entering event_declaration context.");
 

@@ -38,6 +38,8 @@ namespace CSharp_Compiler.Semantics
 
         public Type Type { get => type; }
 
+        public Kind NodeKind { get => kind; }
+
         public Node(IToken token, Kind kind, Type type, object data = null)
         {
             this.token = token;

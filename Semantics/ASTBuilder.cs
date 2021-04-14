@@ -152,7 +152,7 @@ namespace CSharp_Compiler.Semantics
                     CSharpParser.Namespace_or_type_nameContext typeName = classType.namespace_or_type_name();
                     if (typeName != null)
                     {
-                        IToken typeIDtoken = typeName.Start;
+                        IToken typeIDToken = typeName.Start;
                         ClassSymbol typeSymbol = (ClassSymbol)(symbolTable.FindSymbol(typeIDToken, ast));
                         if (typeSymbol != null)
                         {
@@ -187,6 +187,8 @@ namespace CSharp_Compiler.Semantics
                     }
                 }
             }
+
+            return null;
         }
     }
 }

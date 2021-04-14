@@ -40,7 +40,7 @@ namespace CSharp_Compiler.Semantics
             {
                 this.parentScope = parentScope;
                 this.scopeStartNodeIndex = scopeStartNodeIndex;
-                this.nestedScopes = new Stack<Scopes>();
+                this.nestedScopes = new Stack<Scope>();
                 this.symbols = new Dictionary<IToken, Symbol>();
             }
 
@@ -67,7 +67,7 @@ namespace CSharp_Compiler.Semantics
                     if (n.Token == key)
                     {
                         // If it's a class definition, return symbol in the class type data:
-                        if (n.Kind == Node.Kind.ClassDefinition)
+                        if (n.NodeKind == Node.Kind.ClassDefinition)
                         {
                             result = ((ClassType)(n.Type)).Symbol;
                         }
@@ -80,7 +80,7 @@ namespace CSharp_Compiler.Semantics
                     }
                 }
 
-                result = FindSymbol(parent); // Search in parent scope if not in the requested scope
+                result = parentScope.FindSymbol(key, ast); // Search in parent scope if not in the requested scope
 
                 return result;
             }
@@ -94,7 +94,7 @@ namespace CSharp_Compiler.Semantics
 
             public Scope ExitScope()
             {
-                return this.parent;
+                return this.parentScope;
             }
         }
 
