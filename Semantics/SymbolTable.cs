@@ -54,9 +54,35 @@ namespace CSharp_Compiler.Semantics
                 symbols.Remove(key);
             }
 
-            public Symbol FindSymbol(IToken key)
+            public Symbol FindSymbol(IToken key, AST ast)
             {
-                return symbols[key];
+                Symbol result = symbols[key]; // Look for symbol in the current scope
+                if (result != null) return result;
+
+                foreach (Scope nested in nestedScopes)
+                {
+                    Node n = ast.GetNode(nested.CurrentScopeNode);
+                    
+                    // If token matches return symbol:
+                    if (n.Token == key)
+                    {
+                        // If it's a class definition, return symbol in the class type data:
+                        if (n.Kind == Node.Kind.ClassDefinition)
+                        {
+                            result = ((ClassType)(n.Type)).Symbol;
+                        }
+                        else
+                        {
+                            result = (Symbol)(n.Data); // Otherwise, return the data in the actual node
+                        }
+
+                        return result;
+                    }
+                }
+
+                result = FindSymbol(parent); // Search in parent scope if not in the requested scope
+
+                return result;
             }
 
             public Scope EnterScope(int scopeStartNodeIndex)
@@ -103,17 +129,17 @@ namespace CSharp_Compiler.Semantics
             currentScope.RemoveSymbol(key);
         }
 
-        public Symbol FindSymbol(IToken key)
+        public Symbol FindSymbol(IToken key, AST ast)
         {
-            return currentScope.FindSymbol(key);
+            return currentScope.FindSymbol(key, ast);
         }
 
-        public Symbol[] FindSymbols(IToken[] keys)
+        public Symbol[] FindSymbols(IToken[] keys, AST ast)
         {
             List<Symbol> symbols = new List<Symbol>();
             foreach (IToken key in keys)
             {
-                symbols.Add(FindSymbol(key));
+                symbols.Add(FindSymbol(key, ast));
             }
             return symbols.ToArray();
         }

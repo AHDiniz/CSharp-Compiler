@@ -136,7 +136,7 @@ namespace CSharp_Compiler.Semantics
                 }
             }
 
-            Symbol[] baseSymbols = symbolTable.FindSymbols(baseTokens.ToArray());
+            Symbol[] baseSymbols = symbolTable.FindSymbols(baseTokens.ToArray(), ast);
             List<ClassSymbol> baseClassSymbols = new List<ClassSymbol>();
             foreach (Symbol bs in baseSymbols) baseClassSymbols.Add((ClassSymbol)bs);
 
