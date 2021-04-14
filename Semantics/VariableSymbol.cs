@@ -6,17 +6,17 @@ using Antlr4.Runtime.Tree;
 
 namespace CSharp_Compiler.Semantics
 {
-    public class AttributeSymbol : Symbol
+    public class VariableSymbol : Symbol
     {
-        private ClassSymbol ownerClass;
+        private MethodSymbol ownerMethod;
         private object value;
 
-        public ClassSymbol OwnerClass { get => ownerClass; }
+        public MethodSymbol OwnerMethod { get => ownerMethod; }
         public object Value { get => value; }
 
-        public AttributeSymbol(ModifierFlag mods, ClassSymbol ownerClass, object value = null) : base(mods)
+        public VariableSymbol(ModifierFlag mods, MethodSymbol ownerMethod, object value = null) : base(mods)
         {
-            this.ownerClass = ownerClass;
+            this.ownerMethod = ownerMethod;
             this.value = value;
         }
     }

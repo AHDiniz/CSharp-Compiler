@@ -9,15 +9,12 @@ namespace CSharp_Compiler.Semantics
     public class MethodSymbol : Symbol
     {
         private ClassSymbol ownerClass;
-        private Symbol returnType;
 
         public ClassSymbol OwnerClass { get => ownerClass; }
-        public Symbol ReturnType { get => returnType; }
 
-        public MethodSymbol(ModifierFlag mods, ClassSymbol ownerClass, Symbol returnType) : base(mods)
+        public MethodSymbol(ModifierFlag mods, ClassSymbol ownerClass) : base(mods)
         {
             this.ownerClass = ownerClass;
-            this.returnType = returnType;
         }
     }
 }
