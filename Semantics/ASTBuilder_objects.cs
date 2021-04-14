@@ -267,7 +267,7 @@ namespace CSharp_Compiler.Semantics
             Node.Kind parentKind = parentNode.NodeKind;
 
             // Getting the constants' type:
-            Type t = TreatTypeContext(context.type_())
+            Type t = TreatTypeContext(context.type_());
 
             // Getting all the modifiers:
             Symbol.ModifierFlag modFlags = TreatModTokens();
@@ -286,7 +286,7 @@ namespace CSharp_Compiler.Semantics
                 {
                     // Getting the owner class symbol:
                     ClassSymbol ownerClass = ((ClassType)(parentNode.Type)).Symbol;
-                    AttributeSymbol constantSymbol = new AttributeSymbol(mods, ownerClass);
+                    AttributeSymbol constantSymbol = new AttributeSymbol(modFlags, ownerClass);
 
                     // Creating the constant member node:
                     Node constAttrNode = new Node(idToken, Node.Kind.ConstantDeclaration, t, constantSymbol);
