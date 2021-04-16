@@ -232,8 +232,85 @@ namespace CSharp_Compiler.Semantics
             int structNodeIndex = ast.NodeIndex(structNode);
             currentScopeNode.AddChildIndex(structNodeIndex);
             
+            // Adding the struct node:
+            ast.AddNode(structNode);
+
+            // Adding an identifier node as a struct node child:
+            CSharpParser.IdentifierContext idCtx = context.identifier();
+            IToken idToken = idCtx.Start;
+
+            // Adding the struct body node as a class node child:
+            CSharpParser.Class_bodyContext bodyCtx = context.struct_body();
+            ClassType classType = new ClassType(idToken, ClassTag.Struct, classSymbol);
+            Node bodyNode = new Node(idToken, Node.Kind.ClassBody, classType);
+            ast.AddNode(bodyNode);
+            int bodyNodeIndex = ast.NodeIndex(bodyNode);
+            structNode.AddChildIndex(bodyNodeIndex);
+
+            // Enter scope in the symbol table
+            symbolTable.EnterScope(bodyNodeIndex);
+
+            symbolTable.AddSymbol(idToken, classSymbol);
+        }
+
+        public override void ExitStruct_definition(CSharpParser.Struct_definitionContext context)
+        {
+            Console.WriteLine("Exiting struct_definition context.");
+            // Exit struct scope in the symbol table
+            symbolTable.ExitScope();
+        }
+
+        public override void EnterInterface_definition(CSharpParser.Interface_definitionContext context)
+        {
+            Console.WriteLine("Entering interface_definition context.");
+
+            // Getting the current scope node:
+            Node currentScopeNode = ast.GetNode(symbolTable.CurrentScopeNode);
+
+            // Add class symbol to symbol table: parent class, owner class and other informations and add to node data:
+            
+            // Getting the parent classes:
+            List<IToken> baseTokens = new List<IToken>(); // Will hold the base class tokens
+
+            // Getting the interfaces' names identifiers:
+            CSharpParser.Struct_interfacesContext interfaces = context.interface_base();
+            if (interfaces != null)
+            {
+                CSharpParser.Interface_type_listContext typeListCtx = interfaces.interface_type_list();
+                if (typeListCtx != null)
+                {
+                    CSharpParser.Namespace_or_type_nameContext[] types = typeListCtx.namespace_or_type_name();
+                    foreach (CSharpParser.Namespace_or_type_nameContext name in types)
+                    {
+                        CSharpParser.IdentifierContext[] ids = name.identifier();
+                        foreach (CSharpParser.IdentifierContext id in ids)
+                        {
+                            baseTokens.Add(id.Start);
+                        }
+                    }
+                }
+            }
+
+            // Getting the base classes' symbols:
+            Symbol[] baseSymbols = symbolTable.FindSymbols(baseTokens.ToArray(), ast);
+            List<ClassSymbol> baseClassSymbols = new List<ClassSymbol>();
+            foreach (Symbol bs in baseSymbols) baseClassSymbols.Add((ClassSymbol)bs);
+
+            // Getting the interface's modifiers:
+            Symbol.ModifierFlag modFlags = TreatModTokens();
+            modifiersTokens.Clear();
+
+            // Creating the interface symbol:
+            ClassSymbol interfaceSymbol = new ClassSymbol(modFlags, baseClassSymbols.ToArray());
+            
+            // Adding the class node as a child to the current scope's AST node:
+            ClassType type = new ClassType(context.INTERFACE().Symbol);
+            Node interfaceNode = new Node(context.INTERFACE().Symbol, Node.Kind.ClassDefinition, type);
+            int interfaceNodeIndex = ast.NodeIndex(interfaceNode);
+            currentScopeNode.AddChildIndex(interfaceNodeIndex);
+            
             // Adding the class node:
-            ast.AddNode(classNode);
+            ast.AddNode(interfaceNode);
 
             // Adding an identifier node as a class node child:
             CSharpParser.IdentifierContext idCtx = context.identifier();
@@ -241,16 +318,23 @@ namespace CSharp_Compiler.Semantics
 
             // Adding the class body node as a class node child:
             CSharpParser.Class_bodyContext bodyCtx = context.class_body();
-            ClassType classType = new ClassType(idToken, ClassTag.Struct, classSymbol);
-            Node bodyNode = new Node(idToken, Node.Kind.ClassBody, classType);
+            ClassType interfaceType = new ClassType(idToken, ClassTag.Interface, interfaceSymbol);
+            Node bodyNode = new Node(idToken, Node.Kind.ClassBody, interfaceType);
             ast.AddNode(bodyNode);
             int bodyNodeIndex = ast.NodeIndex(bodyNode);
-            classNode.AddChildIndex(bodyNodeIndex);
+            interfaceNode.AddChildIndex(bodyNodeIndex);
 
             // Enter scope in the symbol table
             symbolTable.EnterScope(bodyNodeIndex);
 
-            symbolTable.AddSymbol(idToken, classSymbol);
+            symbolTable.AddSymbol(idToken, interfaceSymbol);
+        }
+
+        public override void ExitInterface_definition(CSharpParser.Interface_definitionContext context)
+        {
+            Console.WriteLine("Exiting interface_definition context.");
+
+            symbolTable.ExitScope();
         }
 
         public override void EnterDestructor_definition(CSharpParser.Destructor_definitionContext context)
