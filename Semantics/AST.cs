@@ -30,5 +30,16 @@ namespace CSharp_Compiler.Semantics
         {
             return nodes[index];
         }
+
+        public Node GetNode(IToken token, Node.Kind kind)
+        {
+            foreach (Node node in nodes)
+            {
+                if (node.Token == token && node.NodeKind == kind)
+                {
+                    return node;
+                }
+            }
+        }
     }
 }

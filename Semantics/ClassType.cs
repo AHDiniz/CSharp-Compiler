@@ -15,6 +15,7 @@ namespace CSharp_Compiler.Semantics
         private ClassSymbol classData;
 
         public ClassSymbol Symbol { get => classData; }
+        public ClassTag Tag { get => classTag; }
 
         public ClassType(IToken typeToken, ClassTag classTag, ClassSymbol classData) : base(typeToken)
         {

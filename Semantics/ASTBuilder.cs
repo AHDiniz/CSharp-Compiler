@@ -153,7 +153,8 @@ namespace CSharp_Compiler.Semantics
                     if (typeName != null)
                     {
                         IToken typeIDToken = typeName.Start;
-                        ClassSymbol typeSymbol = (ClassSymbol)(symbolTable.FindSymbol(typeIDToken, ast));
+                        Node classNode = ast.GetNode(typeIDToken, Node.Kind.ClassDefinition);
+                        ClassSymbol typeSymbol = (ClassSymbol)((ClassType)(classNode.Type).Symbol);
                         if (typeSymbol != null)
                         {
                             ClassTag tag = typeSymbol.Tag;

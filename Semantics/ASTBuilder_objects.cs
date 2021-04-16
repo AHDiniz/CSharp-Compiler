@@ -147,7 +147,7 @@ namespace CSharp_Compiler.Semantics
             ClassSymbol classSymbol = new ClassSymbol(modFlags, interfaceClassSymbols.ToArray());
             
             // Adding the class node as a child to the current scope's AST node:
-            ClassType type = new ClassType(context.STRUCT().Symbol);
+            Type type = new Type(context.STRUCT().Symbol);
             Node structNode = new Node(context.STRUCT().Symbol, Node.Kind.ClassDefinition, type);
             int structNodeIndex = ast.NodeIndex(structNode);
             currentScopeNode.AddChildIndex(structNodeIndex);
@@ -160,7 +160,7 @@ namespace CSharp_Compiler.Semantics
             IToken idToken = idCtx.Start;
 
             // Adding the struct body node as a class node child:
-            CSharpParser.Class_bodyContext bodyCtx = context.struct_body();
+            CSharpParser.Struct_bodyContext bodyCtx = context.struct_body();
             ClassType classType = new ClassType(idToken, ClassTag.Struct, classSymbol);
             Node bodyNode = new Node(idToken, Node.Kind.ClassBody, classType);
             ast.AddNode(bodyNode);
@@ -193,7 +193,7 @@ namespace CSharp_Compiler.Semantics
             List<IToken> baseTokens = new List<IToken>(); // Will hold the base class tokens
 
             // Getting the interfaces' names identifiers:
-            CSharpParser.Struct_interfacesContext interfaces = context.interface_base();
+            CSharpParser.Interface_baseContext interfaces = context.interface_base();
             if (interfaces != null)
             {
                 CSharpParser.Interface_type_listContext typeListCtx = interfaces.interface_type_list();
@@ -224,7 +224,7 @@ namespace CSharp_Compiler.Semantics
             ClassSymbol interfaceSymbol = new ClassSymbol(modFlags, baseClassSymbols.ToArray());
             
             // Adding the class node as a child to the current scope's AST node:
-            ClassType type = new ClassType(context.INTERFACE().Symbol);
+            Type type = new Type(context.INTERFACE().Symbol);
             Node interfaceNode = new Node(context.INTERFACE().Symbol, Node.Kind.ClassDefinition, type);
             int interfaceNodeIndex = ast.NodeIndex(interfaceNode);
             currentScopeNode.AddChildIndex(interfaceNodeIndex);
@@ -378,7 +378,7 @@ namespace CSharp_Compiler.Semantics
                 {
                     // Creating a method variable
                     // Getting the owner method symbol:
-                    MethodSymbol ownerMethod = (MethodSymbol)(parentNode.Symbol);
+                    MethodSymbol ownerMethod = (MethodSymbol)(symbolTable.FindSymbol(parentNode.Token, ast));
                     VariableSymbol constantSymbol = new VariableSymbol(modFlags, ownerMethod);
 
                     // Creating the constant variable node:
