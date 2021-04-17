@@ -392,15 +392,43 @@ namespace CSharp_Compiler.Semantics
             }
         }
 
-        public override void EnterTyped_member_declaration(CSharpParser.Typed_member_declarationContext context)
+        public override void EnterEnum_definition(CSharpParser.Enum_definitionContext context)
         {
-            Console.WriteLine("Entering typed_member_declaration context.");
+            Console.WriteLine("Entering enum_definition context.");
 
-            // Getting all the modifiers:
-            Symbol.ModifierFlag modFlags = TreatModTokens();
+            // Getting the current scope node in the AST:
+            Node parentNode = ast.GetNode(symbolTable.CurrentScopeNode);
+
+            // Getting the modifier for the enumerator:
+            Symbol.ModifierFlag modFlags = TretModTokens();
             modifiersTokens.Clear();
-            if (context.REF() != null) modFlags |= Symbol.ModifierFlag.Ref;
-            if (context.READONLY() != null) modFlags |= Symbol.ModifierFlag.ReadOnly;
+
+            // Getting the base tokens for the enumeration:
+            CSharpParser.Enum_baseContext enumBase = context.enum_base();
+            Type enumBaseType = null;
+            if (enumBase != null) enumBaseType = TreatTypeContext(enumBase.type_());
+
+            // Accessing the enum's body values:
+            List<IToken> values = new List<IToken>();
+            CSharpParser.Enum_member_declarationContext[] members = context.enum_base().enum_member_declaration();
+            foreach (CSharpParser.Enum_member_declarationContext member in members)
+            {
+                CSharpParser.IdentifierContext id = member.identifier();
+                values.Add(id.Start);
+            }
+
+            // Creating the enum symbol:
+            EnumSymbol enumSymbol = EnumSymbol(modFlags, values.ToArray(), enumBaseType);
+
+            // Creating the enum type name:
+            CSharpParser.IdentifierContext id = context.identifier();
+            IToken idToken = id.Start;
+
+            // Creating the enum node and adding it to the AST:
+            Type enumType = new Type(idToken);
+            Node enumNode = new Node(idToken, Node.Kind.EnumDefinition, enumType, enumSymbol);
+            parentNode.AddChildIndex(ast.NodeIndex(enumNode));
+            ast.AddNode(enumNode);
         }
     }
 }

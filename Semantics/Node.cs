@@ -15,6 +15,7 @@ namespace CSharp_Compiler.Semantics
             MemberVariableDeclaration,
             MethodVariableDeclaration,
             ClassDefinition,
+            EnumDefinition,
             MainScope,
             ClassBody,
             Identifier,
