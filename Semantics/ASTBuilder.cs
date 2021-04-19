@@ -146,24 +146,25 @@ namespace CSharp_Compiler.Semantics
             }
             else
             {
-                CSharpParser.Class_typeContext classType = baseTypeCtx.class_type();
-                if (classType != null)
+                CSharpParser.Class_typeContext classTypeContext = baseTypeCtx.class_type();
+                if (classTypeContext != null)
                 {
-                    CSharpParser.Namespace_or_type_nameContext typeName = classType.namespace_or_type_name();
+                    CSharpParser.Namespace_or_type_nameContext typeName = classTypeContext.namespace_or_type_name();
                     if (typeName != null)
                     {
                         IToken typeIDToken = typeName.Start;
                         Node classNode = ast.GetNode(typeIDToken, Node.Kind.ClassDefinition);
-                        ClassSymbol typeSymbol = (ClassSymbol)((ClassType)(classNode.Type).Symbol);
+                        ClassType classType = (ClassType)(classNode.Type);
+                        ClassSymbol typeSymbol = (ClassSymbol)(classType.Symbol);
                         if (typeSymbol != null)
                         {
-                            ClassTag tag = typeSymbol.Tag;
+                            ClassTag tag = classType.Tag;
                             return new ClassType(typeIDToken, tag, typeSymbol);
                         } // Otherwise, needs to do another pass to fix symbol table
                     }
                     else
                     {
-                        IToken typeToken = classType.Start;
+                        IToken typeToken = classTypeContext.Start;
                         TypeTag typeTag = TreatSimpleTypeToken(typeToken.Text);
                         return new BuiltInType(typeToken, typeTag);
                     }

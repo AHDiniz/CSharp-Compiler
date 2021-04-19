@@ -40,6 +40,7 @@ namespace CSharp_Compiler.Semantics
                     return node;
                 }
             }
+            return null;
         }
     }
 }

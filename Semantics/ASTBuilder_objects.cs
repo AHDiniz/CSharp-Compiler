@@ -400,7 +400,7 @@ namespace CSharp_Compiler.Semantics
             Node parentNode = ast.GetNode(symbolTable.CurrentScopeNode);
 
             // Getting the modifier for the enumerator:
-            Symbol.ModifierFlag modFlags = TretModTokens();
+            Symbol.ModifierFlag modFlags = TreatModTokens();
             modifiersTokens.Clear();
 
             // Getting the base tokens for the enumeration:
@@ -410,7 +410,7 @@ namespace CSharp_Compiler.Semantics
 
             // Accessing the enum's body values:
             List<IToken> values = new List<IToken>();
-            CSharpParser.Enum_member_declarationContext[] members = context.enum_base().enum_member_declaration();
+            CSharpParser.Enum_member_declarationContext[] members = context.enum_body().enum_member_declaration();
             foreach (CSharpParser.Enum_member_declarationContext member in members)
             {
                 CSharpParser.IdentifierContext id = member.identifier();
@@ -418,11 +418,11 @@ namespace CSharp_Compiler.Semantics
             }
 
             // Creating the enum symbol:
-            EnumSymbol enumSymbol = EnumSymbol(modFlags, values.ToArray(), enumBaseType);
+            EnumSymbol enumSymbol = new EnumSymbol(modFlags, values.ToArray(), enumBaseType);
 
             // Creating the enum type name:
-            CSharpParser.IdentifierContext id = context.identifier();
-            IToken idToken = id.Start;
+            CSharpParser.IdentifierContext idContext = context.identifier();
+            IToken idToken = idContext.Start;
 
             // Creating the enum node and adding it to the AST:
             Type enumType = new Type(idToken);
