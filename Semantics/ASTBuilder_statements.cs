@@ -181,10 +181,12 @@ namespace CSharp_Compiler.Semantics
             // Creating a node and a scope for the if body:
             Node ifBodyNode = new Node(null, Node.Kind.IfStatementBody, null);
             ast.AddNode(ifBodyNode);
-
+            int ifBodyNodeIndex = ast.NodeIndex(ifBodyNode);
+            ifNodeIndex.AddChildIndex(ifBodyNodeIndex);
+            // The node with the statements will be a child of the if body node
+            
             // Checking if there's an else statement:
-            // Creating a node for the else statement:
-            // Creating a node and a scope for the else body:
+            
         }
 
         private void TreatSwitchStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)

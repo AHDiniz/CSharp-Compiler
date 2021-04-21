@@ -24,6 +24,8 @@ namespace CSharp_Compiler.Semantics
             Label,
             IfStatement,
             IfStatementBody,
+            ElseStatement,
+            ElseStatementBody,
         }
 
         private IToken token;
