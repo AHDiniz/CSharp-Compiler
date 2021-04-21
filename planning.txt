@@ -1,0 +1,144 @@
+Procedimentos para criação de nós na AST:
+
+Essas "funções" de tratamento "retornam" uma subárvore da AST. Elas não precisam ter uma relação um pra um com a implementação
+Ignore as partes que envolvam excessões
+
+tratar expressão:
+    criar nó pai da expressão
+    adicionar nó pai da expressão como filho do nó do escopo atual
+    se for expressão de atribuição:
+        tratar expressão de atribuição
+    se não:
+        checar se tem REF
+        tratar expressão sem atribuição
+
+tratar expressão de atribuição:
+    criar nó pai da atribuição com token do operador usado
+    tratar expressão unária e adicionar como filho do nó do operador
+    tratar expressão e adicionar como filho do nó do operador
+
+tratar expressão sem atribuição:
+    tratar expressão condicional
+
+tratar expressão condicional:
+    criar nó pai do tipo condicional ternário
+    tratar expressão da condição e adicionar como filho do nó do condicional ternário
+    se tiver o resto do condicional ternário:
+        tratar expressão do caso verdadeiro e adicionar como filho do nó do condicional ternário
+        tratar expressão do caso falso e adicionar como filho do nó do condicional ternário
+    se não:
+        tratar expressão da condição passando o nó pai para alterar o tipo
+
+tratar expressão da condição (null_coalescing_expression):
+    tratar expressão or passando o nó pai para alterar o tipo
+
+tratar expressão or:
+    se tiver operador or:
+        mudar tipo do nó pai da expressão para expressão or
+        tratar expressão do primeiro operando e adicionar como filho do nó da expressão or
+        tratar expressão do segundo operando e adicionar como filho do nó da expressão or
+    se não:
+        tratar expressão and passando o nó pai para alterar o tipo
+
+tratar expressão and:
+    se tiver operador and:
+        mudar tipo do nó pai da expressão para expressão and
+        tratar expressão do primeiro operando e adicionar como filho do nó da expressão and
+        tratar expressão do segundo operando e adicionar como filho do nó da expressão and
+    se não:
+        tratar expressão or inclusivo passando o nó pai para alterar o tipo
+
+tratar expressão or inclusivo:
+    se tiver operador or inclusivo:
+        mudar tipo do nó pai da expressão para expressão or inclusivo
+        tratar expressão do primeiro operando e adicionar como filho do nó da expressão or inclusivo
+        tratar expressão do segundo operando e adicionar como filho do nó da expressão or inclusivo
+    se não:
+        tratar expressão or exclusivo passando o nó pai para alterar o tipo
+
+tratar expressão or exclusivo:
+    se tiver operador or exclusivo:
+        mudar tipo do nó pai da expressão para expressão or exclusivo
+        tratar expressão do primeiro operando e adicionar como filho do nó da expressão or exclusivo
+        tratar expressão do segundo operando e adicionar como filho do nó da expressão or exclusivo
+    se não:
+        tratar expressão and binário passando o nó pai para alterar o tipo
+
+tratar expressão and binário:
+    se tiver operador and binário:
+        mudar tipo do nó pai da expressão para expressão and binário
+        tratar expressão do primeiro operando e adicionar como filho do nó da expressão and binário
+        tratar expressão do segundo operando e adicionar como filho do nó da expressão and binário
+    se não:
+        tratar expressão relacional passando o nó pai para alterar o tipo
+
+tratar expressão relacional:
+    se tiver operador relacional:
+        mudar tipo do nó pai da expressão para expressão relacional
+        tratar expressão do primeiro operando e adicionar como filho do nó da expressão relacional
+        tratar expressão do segundo operando e adicionar como filho do nó da expressão relacional
+    se não:
+        tratar expressão shift passando o nó pai para alterar o tipo
+
+tratar expressão shift:
+    se tiver operador shift:
+        mudar tipo do nó pai da expressão para expressão shift
+        tratar expressão do primeiro operando e adicionar como filho do nó da expressão shift
+        tratar expressão do segundo operando e adicionar como filho do nó da expressão shift
+    se não:
+        tratar expressão de adição passando o nó pai para alterar o tipo
+
+tratar expressão de adição:
+    se tiver operador de adição:
+        mudar tipo do nó pai da expressão para expressão de adição
+        tratar expressão do primeiro operando e adicionar como filho do nó da expressão de adição
+        tratar expressão do segundo operando e adicionar como filho do nó da expressão de adição
+    se não:
+        tratar expressão de multiplicação passando o nó pai para alterar o tipo
+
+tratar expressão de multiplicação:
+    se tiver operador de multiplicação:
+        mudar tipo do nó pai da expressão para expressão de multiplicação
+        tratar expressão do primeiro operando e adicionar como filho do nó da expressão de multiplicação
+        tratar expressão do segundo operando e adicionar como filho do nó da expressão de multiplicação
+    se não:
+        tratar expressão range passando o nó do pai para alterar o tipo
+
+tratar expressão range:
+    se tiver operador range:
+        mudar tipo da expressão para expressão range
+        tratar expressão unária do segundo operando e adicionar como filho do nó da expressão range
+    tratar expressão unária do primeiro operando e adicionar como filho do nó da expressão
+
+tratar expressão unária:
+    mudar tipo da expressão para expressão primária
+    se tiver expressão primária:
+        tratar expressão primária e passar nó do pai para alterar o tipo
+    se tiver '(' tipo ')':
+        mudar tipo da expressão para conversão
+        tratar expressão unária e adicionar como filho do nó da expressão unária
+    se não:
+        colocar operador no nó pai da expressão
+        tratar expressão unária e adicionar como filho do nó da expressão unária
+
+tratar expressão primária:
+    mudar tipo do nó pai para expressão primária
+    tratar parte inicial da expressão e adicionar como filho do nó da expressão primária
+    verificar primeiro conjunto de expressões de acesso a elemento de vetor:
+        tratar cada expressão de acesso a elemento vetorial e adicionar como filho do nó da expressão primária
+    se tiver acesso a membro:
+        tratar acesso a membro e adicionar como filho do nó da expressão primária
+    se tiver invocação de método:
+        tratar invocação de método e adicionar como filho do nó da expressão primária
+    se tiver operador de incrementação/decrementação:
+        criar nó para o operador e adicionar como filho do nó da expressão primária
+
+tratar início de expressão primária:
+    se for literal:
+        tratar literal e adicionar como filho do nó da expressão primária
+    se for identificador ou tipo pré-definido ou LITERAL_ACCESS ou THIS ou BASE:
+        criar nó para token e adicionar como filho do nó da expressão primária
+    se BASE e indentificador:
+        criar nó para cada token e adicionar como filhos do nó da expressão primária
+    se tiver NEW:
+        tratar criação de objetos
