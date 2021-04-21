@@ -387,8 +387,7 @@ simple_embedded_statement:
 	| IF OPEN_PARENS expression CLOSE_PARENS if_body (
 		ELSE if_body
 	)?																					# ifStatement
-	| SWITCH OPEN_PARENS expression CLOSE_PARENS OPEN_BRACE switch_section* CLOSE_BRACE	#
-		switchStatement
+	| SWITCH OPEN_PARENS expression CLOSE_PARENS OPEN_BRACE switch_section* CLOSE_BRACE	# switchStatement
 
 	// iteration statements
 	| WHILE OPEN_PARENS expression CLOSE_PARENS embedded_statement			# whileStatement

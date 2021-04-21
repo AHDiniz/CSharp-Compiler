@@ -21,7 +21,9 @@ namespace CSharp_Compiler.Semantics
             Identifier,
             Constructor,
             Destructor,
-            Label
+            Label,
+            IfStatement,
+            IfStatementBody,
         }
 
         private IToken token;
