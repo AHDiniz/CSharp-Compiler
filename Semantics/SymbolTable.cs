@@ -6,7 +6,7 @@ using Antlr4.Runtime.Tree;
 
 namespace CSharp_Compiler.Semantics
 {
-    public abstract class Symbol
+    public class Symbol
     {
         [System.Flags]
         public enum ModifierFlag
@@ -101,11 +101,14 @@ namespace CSharp_Compiler.Semantics
         private Scope mainScope;
         private Scope currentScope;
 
+        private List<Type> types;
+
         public int CurrentScopeNode { get => currentScope.CurrentScopeNode; }
 
         public SymbolTable()
         {
             mainScope = new Scope(-1);
+            types = new List<Type>();
             currentScope = mainScope;
         }
 
@@ -142,6 +145,21 @@ namespace CSharp_Compiler.Semantics
                 symbols.Add(FindSymbol(key, ast));
             }
             return symbols.ToArray();
+        }
+
+        public Type FindType(IToken token)
+        {
+            foreach(Type t in types)
+            {
+                if (t.Token == token)
+                    return t;
+            }
+            return null;
+        }
+
+        public void AddType(Type t)
+        {
+            types.Add(t);
         }
     }
 }

@@ -85,6 +85,7 @@ namespace CSharp_Compiler.Semantics
             // Adding the class body node as a class node child:
             CSharpParser.Class_bodyContext bodyCtx = context.class_body();
             ClassType classType = new ClassType(idToken, ClassTag.Class, classSymbol);
+            symbolTable.AddType(classType);
             Node bodyNode = new Node(idToken, Node.Kind.ClassBody, classType);
             ast.AddNode(bodyNode);
             int bodyNodeIndex = ast.NodeIndex(bodyNode);
@@ -144,7 +145,7 @@ namespace CSharp_Compiler.Semantics
             modifiersTokens.Clear();
 
             // Creating the class symbol:
-            ClassSymbol classSymbol = new ClassSymbol(modFlags, interfaceClassSymbols.ToArray());
+            ClassSymbol structSymbol = new ClassSymbol(modFlags, interfaceClassSymbols.ToArray());
             
             // Adding the class node as a child to the current scope's AST node:
             Type type = new Type(context.STRUCT().Symbol);
@@ -161,8 +162,9 @@ namespace CSharp_Compiler.Semantics
 
             // Adding the struct body node as a class node child:
             CSharpParser.Struct_bodyContext bodyCtx = context.struct_body();
-            ClassType classType = new ClassType(idToken, ClassTag.Struct, classSymbol);
-            Node bodyNode = new Node(idToken, Node.Kind.ClassBody, classType);
+            ClassType structType = new ClassType(idToken, ClassTag.Struct, structSymbol);
+            symbolTable.AddType(structType);
+            Node bodyNode = new Node(idToken, Node.Kind.ClassBody, structType);
             ast.AddNode(bodyNode);
             int bodyNodeIndex = ast.NodeIndex(bodyNode);
             structNode.AddChildIndex(bodyNodeIndex);
@@ -170,7 +172,7 @@ namespace CSharp_Compiler.Semantics
             // Enter scope in the symbol table
             symbolTable.EnterScope(bodyNodeIndex);
 
-            symbolTable.AddSymbol(idToken, classSymbol);
+            symbolTable.AddSymbol(idToken, structSymbol);
         }
 
         public override void ExitStruct_definition(CSharpParser.Struct_definitionContext context)
@@ -239,6 +241,7 @@ namespace CSharp_Compiler.Semantics
             // Adding the class body node as a class node child:
             CSharpParser.Class_bodyContext bodyCtx = context.class_body();
             ClassType interfaceType = new ClassType(idToken, ClassTag.Interface, interfaceSymbol);
+            symbolTable.AddType(interfaceType);
             Node bodyNode = new Node(idToken, Node.Kind.ClassBody, interfaceType);
             ast.AddNode(bodyNode);
             int bodyNodeIndex = ast.NodeIndex(bodyNode);
@@ -426,6 +429,7 @@ namespace CSharp_Compiler.Semantics
 
             // Creating the enum node and adding it to the AST:
             Type enumType = new Type(idToken);
+            symbolTable.AddType(enumType);
             Node enumNode = new Node(idToken, Node.Kind.EnumDefinition, enumType, enumSymbol);
             parentNode.AddChildIndex(ast.NodeIndex(enumNode));
             ast.AddNode(enumNode);

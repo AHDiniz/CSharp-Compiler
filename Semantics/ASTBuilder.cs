@@ -141,8 +141,13 @@ namespace CSharp_Compiler.Semantics
             if (simpleType != null)
             {
                 IToken typeToken = baseTypeCtx.Start;
+                Type t = symbolTable.FindType(typeToken);
+                if (t != null) return t;
+
                 TypeTag typeTag = TreatSimpleTypeToken(typeToken.Text);
-                return new BuiltInType(typeToken, typeTag);
+                BuiltInType builtInType = new BuiltInType(typeToken, typeTag);
+                symbolTable.AddType(t);
+                return builtInType;
             }
             else
             {
@@ -153,20 +158,21 @@ namespace CSharp_Compiler.Semantics
                     if (typeName != null)
                     {
                         IToken typeIDToken = typeName.Start;
-                        Node classNode = ast.GetNode(typeIDToken, Node.Kind.ClassDefinition);
-                        ClassType classType = (ClassType)(classNode.Type);
-                        ClassSymbol typeSymbol = (ClassSymbol)(classType.Symbol);
-                        if (typeSymbol != null)
+                        ClassType t = (ClassType)symbolTable.FindType(typeIDToken);
+                        if (t != null) return t;
+                        else
                         {
-                            ClassTag tag = classType.Tag;
-                            return new ClassType(typeIDToken, tag, typeSymbol);
-                        } // Otherwise, needs to do another pass to fix symbol table
+                            Console.WriteLine("FATAL ERROR: Unidentified type found.");
+                            Environment.Exit(1);
+                        }
                     }
                     else
                     {
                         IToken typeToken = classTypeContext.Start;
                         TypeTag typeTag = TreatSimpleTypeToken(typeToken.Text);
-                        return new BuiltInType(typeToken, typeTag);
+                        BuiltInType builtInType = new BuiltInType(typeToken, typeTag);
+                        symbolTable.AddType(builtInType);
+                        return builtInType;
                     }
                 }
                 else
@@ -181,11 +187,15 @@ namespace CSharp_Compiler.Semantics
                             CSharpParser.Type_Context typeContext = tupleElem.type_();
                             subTypes.Add(TreatTypeContext(typeContext));
                         }
-                        return new TupleType(null, subTypes.ToArray());
+                        TupleType t = new TupleType(null, subTypes.ToArray()); 
+                        symbolTable.AddType(t);
+                        return t;
                     }
                     else
                     {
-                        return new BuiltInType(baseTypeCtx.VOID().Symbol, TypeTag.Void, true);
+                        BuiltInType voidType = new BuiltInType(baseTypeCtx.VOID().Symbol, TypeTag.Void, true);
+                        symbolTable.AddType(voidType);
+                        return voidType;
                     }
                 }
             }

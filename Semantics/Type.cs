@@ -8,6 +8,8 @@ namespace CSharp_Compiler.Semantics
     {
         private IToken typeToken;
 
+        public IToken Token { get => typeToken; }
+
         public Type(IToken typeToken)
         {
             this.typeToken = typeToken;

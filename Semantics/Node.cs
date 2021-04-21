@@ -20,7 +20,8 @@ namespace CSharp_Compiler.Semantics
             ClassBody,
             Identifier,
             Constructor,
-            Destructor
+            Destructor,
+            Label
         }
 
         private IToken token;
