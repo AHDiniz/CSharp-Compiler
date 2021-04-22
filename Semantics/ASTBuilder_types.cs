@@ -88,7 +88,6 @@ namespace CSharp_Compiler.Semantics
 
         public override void EnterArgument(CSharpParser.ArgumentContext context)
         {
-
             Node currentScopeNode = ast.GetNode(symbolTable.CurrentScopeNode);
 
             IToken argumentToken = context.Start;
@@ -103,10 +102,16 @@ namespace CSharp_Compiler.Semantics
                 if(parentContext == null){
                     throw new Exception("Undefined method (WTF!!)");
                 }
+
                 //TODO: Need get method definition to check argument types 
+                IToken methodDefinitionToken = ((CSharpParser.Method_declarationContext) parentContext).Start;
+                Node methodDeclarationNode = ast.GetNode(methodDefinitionToken, Node.Kind.MethodVariableDeclaration);
 
+                if(methodDeclarationNode == null){
+                    throw new Exception("Undefined method symbol");
+                }
 
-                //calc argument position
+                //calcule argument position
                 int argumentPosition = 0;
                 RuleContext parentContext_1 = context;
                 while((parentContext_1 = parentContext_1.Parent).GetType() == typeof(CSharpParser.ArgumentContext)){
