@@ -14,6 +14,7 @@ namespace CSharp_Compiler.Semantics
             EqualityComparision,
             MemberVariableDeclaration,
             MethodVariableDeclaration,
+            MethodDeclaration,
             ClassDefinition,
             EnumDefinition,
             MainScope,
@@ -52,20 +53,7 @@ namespace CSharp_Compiler.Semantics
             PrimaryExpression,
             BracketExpression,
             ExpressionList,
-            Expression,
-            SwitchStatement,
-            SwitchSection,
-            SwitchCaseLabel,
-            SwitchDefaultLabel,
-            DoStatement,
-            BreakStatement,
-            ContinueStatement,
-            ReturnStatement,
-            GoToStatement,
-            GoToTarget,
-            ForStatement,
-            ForeachStatement,
-            IteratorDeclaration
+            Expression
         }
 
         private IToken token;
