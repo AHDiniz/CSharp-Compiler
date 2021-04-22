@@ -45,11 +45,11 @@ namespace CSharp_Compiler.Semantics
             else //non_assignment_expression | REF non_assignment_expression;
             {
                 childTreat = treatExpressionNonAssignment(context.non_assignment_expression());
+                //tipo em non_assignment_expression
                 expressionType = childTreat.tipo;
                 if (context.REF() != null)
                 {
                     token = context.REF().Symbol;
-                    expressionType = new Type(token);
                 }
             }
             // Creating the expression node and adding it to the AST:
@@ -71,19 +71,19 @@ namespace CSharp_Compiler.Semantics
 
             if (!context.unary_expression().IsEmpty && !context.assignment_operator().IsEmpty && !context.expression().IsEmpty)
             {
-                //unary tem prioridade de tipo
-                //subnode para agrupar node dos tres
-                childTreat = treatUnaryExpression(context.unary_expression());
+                //expression determina o tipo
+                childTreat = treatExpression(context.expression());
                 currentType = childTreat.tipo;
                 //criando node
                 currentNode =  new Node(token, currentKind, currentType);
                 ast.AddNode(currentNode);
                 //adicionando ao subnode
+                currentNode.AddChildIndex(childTreat.ChildNodeIndex);//expression
+                childTreat = treatUnaryExpression(context.unary_expression());
                 currentNode.AddChildIndex(childTreat.ChildNodeIndex);//unary 
                 childTreat = treatAssignmentOperator(context.assignment_operator());
                 currentNode.AddChildIndex(childTreat.ChildNodeIndex);//assign op
-                childTreat = treatExpression(context.expression());
-                currentNode.AddChildIndex(childTreat.ChildNodeIndex); // expression
+                
             }
             else //unary_expression '??=' throwable_expression;
             {
@@ -111,21 +111,23 @@ namespace CSharp_Compiler.Semantics
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
             if (!context.lambda_expression().IsEmpty)
             {
-                childTreat = treatLambdaExpression(context.lambda_expression());
-                currentType = childTreat.tipo;
+                //childTreat = treatLambdaExpression(context.lambda_expression());
+                //currentType = childTreat.tipo;
                 currentNode = new Node(token, currentKind, currentType);
                 ast.AddNode(currentNode);
                 //adicionando child
-                currentNode.AddChildIndex(childTreat.ChildNodeIndex);
+                //currentNode.AddChildIndex(childTreat.ChildNodeIndex);
             }
             else if (!context.query_expression().IsEmpty)
             {
+                /*
                 childTreat = treatQueryExpression(context.query_expression());
                 currentType = childTreat.tipo;
                 currentNode = new Node(token, currentKind, currentType);
                 ast.AddNode(currentNode);
                 //adicionando child
                 currentNode.AddChildIndex(childTreat.ChildNodeIndex);
+                */
             }
             else //conditional_expression
             {
@@ -139,7 +141,7 @@ namespace CSharp_Compiler.Semantics
             return (ast.NodeIndex(currentNode), currentType);
         }
 
-        private (int ChildNodeIndex, Type tipo) treatLambdaExpression(CSharpParser.Lambda_expressionContext context)
+       /* private (int ChildNodeIndex, Type tipo) treatLambdaExpression(CSharpParser.Lambda_expressionContext context)
         {
             
             Console.WriteLine("Entering lambda_expression context.");
@@ -150,28 +152,83 @@ namespace CSharp_Compiler.Semantics
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
             //ASYNC? anonymous_function_signature right_arrow anonymous_function_body;
             //prioridade async e anonymous function
-            if(context.ASYNC().Symbol != null)
+            childTreat = treatAnonymousFunctionSignature(context.anonymous_function_signature());
+            currentType = childTreat.tipo;
+            if (context.ASYNC().Symbol != null)
             {
                 token = context.ASYNC().Symbol;
                 currentType = new Type(token);
             }
-            //criacao dos nós filhos 
-            //
-            //      A FAZER
-            //
+            
+
+
             return (ast.NodeIndex(currentNode), currentType);
         }
+            
+        private (int ChildNodeIndex, Type tipo) treatAnonymousFunctionSignature(CSharpParser.Anonymous_function_signatureContext context)
+        {
 
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatExplicitAnonymousFunctionParameterList(CSharpParser.Explicit_anonymous_function_parameter_listContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatExplicitAnonymousFunctionParameter(CSharpParser.Explicit_anonymous_function_parameterContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatImplicitAnonymousFunctionParameterList(CSharpParser.Implicit_anonymous_function_parameter_listContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatImplicitAnonymousFunctionParameter(CSharpParser.Implicit_anonymous_function_parameter_listContext context)
+        {
+
+        }
+
+        
         private (int ChildNodeIndex, Type tipo) treatQueryExpression(CSharpParser.Query_expressionContext context)
         {
             Console.WriteLine("Entering query_expression context.");
-            Node.Kind currentKind = Node.Kind.LambdaExpression;
+            Node.Kind currentKind = Node.Kind.QueryExpression;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
+            (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
+            //tipo vem do from clause
+            childTreat = treatFromClause(context.from_clause());
+            //criando node
+            currentType = TreatTypeContext(context.from_clause().type_());
+            currentNode = new Node(token, currentKind, currentType);
+            ast.AddNode(currentNode);
+            //adicionando child
+            currentNode.AddChildIndex(childTreat.ChildNodeIndex);
+            childTreat = treatQueryBody(context.query_body());
+            currentNode.AddChildIndex(childTreat.ChildNodeIndex);
+            return (ast.NodeIndex(currentNode), currentType);
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatFromClause(CSharpParser.From_clauseContext context)
+        {
+            Console.WriteLine("Entering from_clause context.");
+            Node.Kind currentKind = Node.Kind.Type;
             IToken token = null;
             Type currentType = null;
             Node currentNode = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
         }
 
+        private (int ChildNodeIndex, Type tipo) treatQueryBody(CSharpParser.Query_bodyContext context)
+        {
+
+        }
+        */
+        
         private (int ChildNodeIndex, Type tipo) treatConditionalExpression(CSharpParser.Conditional_expressionContext context)
         {
 
