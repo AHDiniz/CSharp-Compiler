@@ -27,6 +27,18 @@ namespace CSharp_Compiler.Semantics
             IfStatementBody,
             ElseStatement,
             ElseStatementBody,
+            SwitchStatement,
+            SwitchDefaultLabel,
+            SwitchCaseLabel,
+            DoStatement,
+            ForStatement,
+            ForeachStatement,
+            IteratorDeclaration,
+            BreakStatement,
+            ContinueStatement,
+            GoToStatement,
+            GoToTarget,
+            ReturnStatement,
             Argument,
             ExpressionAssignment,
             ExpressionNonAssignment,
@@ -53,7 +65,8 @@ namespace CSharp_Compiler.Semantics
             PrimaryExpression,
             BracketExpression,
             ExpressionList,
-            Expression
+            Expression,
+            MethodInvocation
         }
 
         private IToken token;
@@ -67,6 +80,8 @@ namespace CSharp_Compiler.Semantics
             set => this.data = value;
             get => data;
         }
+
+        public List<int> Children { get => children; }
 
         public IToken Token { get => token; }
 

@@ -21,7 +21,7 @@ namespace CSharp_Compiler.Semantics
             Node blockNode = new Node(null, Node.Kind.CodeBlock, null);
             ast.AddNode(blockNode);
             int blockNodeIndex = ast.NodeIndex(blockNode);
-            parentNode.NodeIndex(blockNodeIndex);
+            parentNode.AddChildIndex(blockNodeIndex);
 
             // Treating each statement in the statement list:
             CSharpParser.Statement_listContext listContext = context.statement_list();
@@ -106,22 +106,40 @@ namespace CSharp_Compiler.Semantics
                 else
                 {
                     CSharpParser.Embedded_statementContext embedded = statement.embedded_statement();
-                    CSharpParser.Simple_embedded_statementContext simpleStatement = statement.simple_embedded_statement();
-                    if (simpleStatement != null)
-                    {
-                        if (simpleStatement.IF() != null) TreatIfStatement(simpleStatement, parentNode);
-                        else if (simpleStatement.SWITCH() != null) TreatSwitchStatement(simpleStatement, parentNode);
-                        else if (simpleStatement.DO() != null) TreatDoStatement(simpleStatement, parentNode);
-                        else if (simpleStatement.WHILE() != null) TreatWhileStatement(simpleStatement, parentNode);
-                        else if (simpleStatement.FOR() != null) TreatForStatement(simpleStatement, parentNode);
-                        else if (simpleStatement.FOREACH() != null) TreatForeachStatement(simpleStatement, parentNode);
-                        else if (simpleStatement.BREAK() != null) TreatBreakStatement(simpleStatement, parentNode);
-                        else if (simpleStatement.CONTINUE() != null) TreatContinueStatement(simpleStatement, parentNode);
-                        else if (simpleStatement.GOTO() != null) TreatGoToStatement(simpleStatement, parentNode);
-                        else if (simpleStatement.RETURN() != null) TreatReturnStatement(simpleStatement, parentNode);
-                    }
+                    CSharpParser.Simple_embedded_statementContext simpleStatement = embedded.simple_embedded_statement();
+                    if (simpleStatement != null) TreatSimpleEmbeddedStatement(simpleStatement, parentNode);
                     else TreatBlock(embedded.block(), parentNode);
                 }
+            }
+        }
+
+        private void TreatSimpleEmbeddedStatement(CSharpParser.Simple_embedded_statementContext context, Node parentNode)
+        {
+            CSharpParser.IfStatementContext ifContext = new CSharpParser.IfStatementContext(context);
+            CSharpParser.SwitchStatementContext switchContext = new CSharpParser.SwitchStatementContext(context);
+            CSharpParser.DoStatementContext doContext = new CSharpParser.DoStatementContext(context);
+            CSharpParser.WhileStatementContext whileContext = new CSharpParser.WhileStatementContext(context);
+            CSharpParser.ForStatementContext forContext = new CSharpParser.ForStatementContext(context);
+            CSharpParser.ForeachStatementContext foreachContext = new CSharpParser.ForeachStatementContext(context);
+            CSharpParser.BreakStatementContext breakContext = new CSharpParser.BreakStatementContext(context);
+            CSharpParser.ContinueStatementContext continueContext = new CSharpParser.ContinueStatementContext(context);
+            CSharpParser.GotoStatementContext gotoContext = new CSharpParser.GotoStatementContext(context);
+            CSharpParser.ReturnStatementContext returnContext = new CSharpParser.ReturnStatementContext(context);
+
+            if (ifContext.IF() != null) TreatIfStatement(ifContext, parentNode);
+            else if (switchContext.SWITCH() != null) TreatSwitchStatement(switchContext, parentNode);
+            else if (doContext.DO() != null) TreatDoStatement(doContext, parentNode);
+            else if (whileContext.WHILE() != null) TreatWhileStatement(whileContext, parentNode);
+            else if (forContext.FOR() != null) TreatForStatement(forContext, parentNode);
+            else if (foreachContext.FOREACH() != null) TreatForeachStatement(foreachContext, parentNode);
+            else if (breakContext.BREAK() != null) TreatBreakStatement(breakContext, parentNode);
+            else if (continueContext.CONTINUE() != null) TreatContinueStatement(continueContext, parentNode);
+            else if (gotoContext.GOTO() != null) TreatGoToStatement(gotoContext, parentNode);
+            else if (returnContext.RETURN() != null) TreatReturnStatement(returnContext, parentNode);
+            else
+            {
+                Console.WriteLine("FATAL ERROR: Could not define the type of simple_embedded_statement rule.");
+                Environment.Exit(1);
             }
         }
 
@@ -160,7 +178,7 @@ namespace CSharp_Compiler.Semantics
             }
         }
 
-        private void TreatIfStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatIfStatement(CSharpParser.IfStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's an if statement:
             IToken ifToken = statement.IF().Symbol;
@@ -181,19 +199,7 @@ namespace CSharp_Compiler.Semantics
             CSharpParser.If_bodyContext[] ifBodies = statement.if_body();
             // Treating the if statement body:
             CSharpParser.Simple_embedded_statementContext embedded = ifBodies[0].simple_embedded_statement();
-            if (embedded != null)
-            {
-                if (simpleStatement.IF() != null) TreatIfStatement(embedded, ifBodyNode);
-                else if (simpleStatement.SWITCH() != null) TreatSwitchStatement(embedded, ifBodyNode);
-                else if (simpleStatement.DO() != null) TreatDoStatement(embedded, ifBodyNode);
-                else if (simpleStatement.WHILE() != null) TreatWhileStatement(embedded, ifBodyNode);
-                else if (simpleStatement.FOR() != null) TreatForStatement(embedded, ifBodyNode);
-                else if (simpleStatement.FOREACH() != null) TreatForeachStatement(embedded, ifBodyNode);
-                else if (simpleStatement.BREAK() != null) TreatBreakStatement(embedded, ifBodyNode);
-                else if (simpleStatement.CONTINUE() != null) TreatContinueStatement(embedded, ifBodyNode);
-                else if (simpleStatement.GOTO() != null) TreatGoToStatement(embedded, ifBodyNode);
-                else if (simpleStatement.RETURN() != null) TreatReturnStatement(embedded, ifBodyNode);
-            }
+            if (embedded != null) TreatSimpleEmbeddedStatement(embedded, ifBodyNode);
             else TreatBlock(ifBodies[0].block(), ifBodyNode);
 
             // Checking if there's an else statement:
@@ -214,24 +220,12 @@ namespace CSharp_Compiler.Semantics
 
                 // Treating the else statement body:
                 CSharpParser.Simple_embedded_statementContext elseEmbedded = ifBodies[1].simple_embedded_statement();
-                if (elseEmbedded != null)
-                {
-                    if (simpleStatement.IF() != null) TreatIfStatement(elseEmbedded, elseBody);
-                    else if (simpleStatement.SWITCH() != null) TreatSwitchStatement(elseEmbedded, elseBody);
-                    else if (simpleStatement.DO() != null) TreatDoStatement(elseEmbedded, elseBody);
-                    else if (simpleStatement.WHILE() != null) TreatWhileStatement(elseEmbedded, elseBody);
-                    else if (simpleStatement.FOR() != null) TreatForStatement(elseEmbedded, elseBody);
-                    else if (simpleStatement.FOREACH() != null) TreatForeachStatement(elseEmbedded, elseBody);
-                    else if (simpleStatement.BREAK() != null) TreatBreakStatement(elseEmbedded, elseBody);
-                    else if (simpleStatement.CONTINUE() != null) TreatContinueStatement(elseEmbedded, elseBody);
-                    else if (simpleStatement.GOTO() != null) TreatGoToStatement(elseEmbedded, elseBody);
-                    else if (simpleStatement.RETURN() != null) TreatReturnStatement(elseEmbedded, elseBody);
-                }
+                if (elseEmbedded != null) TreatSimpleEmbeddedStatement(elseEmbedded, elseBody);
                 else TreatBlock(ifBodies[1].block(), elseBody);
             }         
         }
 
-        private void TreatSwitchStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatSwitchStatement(CSharpParser.SwitchStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's a switch statement:
             IToken switchToken = statement.SWITCH().Symbol;
@@ -289,7 +283,7 @@ namespace CSharp_Compiler.Semantics
             }
         }
 
-        private void TreatDoStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatDoStatement(CSharpParser.DoStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's a do statement:
             IToken doToken = statement.DO().Symbol;
@@ -301,20 +295,8 @@ namespace CSharp_Compiler.Semantics
             // Craeting sub tree and scope for the list of statements:
             symbolTable.EnterScope(doIndex);
             CSharpParser.Embedded_statementContext embedded = statement.embedded_statement();
-            CSharpParser.Simple_embedded_statementContext simpleStatement = statement.simple_embedded_statement();
-            if (simpleStatement != null)
-            {
-                if (simpleStatement.IF() != null) TreatIfStatement(simpleStatement, doNode);
-                else if (simpleStatement.SWITCH() != null) TreatSwitchStatement(simpleStatement, doNode);
-                else if (simpleStatement.DO() != null) TreatDoStatement(simpleStatement, doNode);
-                else if (simpleStatement.WHILE() != null) TreatWhileStatement(simpleStatement, doNode);
-                else if (simpleStatement.FOR() != null) TreatForStatement(simpleStatement, doNode);
-                else if (simpleStatement.FOREACH() != null) TreatForeachStatement(simpleStatement, doNode);
-                else if (simpleStatement.BREAK() != null) TreatBreakStatement(simpleStatement, doNode);
-                else if (simpleStatement.CONTINUE() != null) TreatContinueStatement(simpleStatement, doNode);
-                else if (simpleStatement.GOTO() != null) TreatGoToStatement(simpleStatement, doNode);
-                else if (simpleStatement.RETURN() != null) TreatReturnStatement(simpleStatement, doNode);
-            }
+            CSharpParser.Simple_embedded_statementContext simpleStatement = embedded.simple_embedded_statement();
+            if (simpleStatement != null) TreatSimpleEmbeddedStatement(simpleStatement, doNode);
             else TreatBlock(embedded.block(), doNode);
             
             // TODO: Creating sub tree for the condition expression:
@@ -322,7 +304,7 @@ namespace CSharp_Compiler.Semantics
             symbolTable.ExitScope();
         }
 
-        private void TreatWhileStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatWhileStatement(CSharpParser.WhileStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's a do statement:
             IToken whileToken = statement.WHILE().Symbol;
@@ -337,26 +319,14 @@ namespace CSharp_Compiler.Semantics
 
             // Craeting sub tree and scope for the list of statements:
             CSharpParser.Embedded_statementContext embedded = statement.embedded_statement();
-            CSharpParser.Simple_embedded_statementContext simpleStatement = statement.simple_embedded_statement();
-            if (simpleStatement != null)
-            {
-                if (simpleStatement.IF() != null) TreatIfStatement(simpleStatement, whileNode);
-                else if (simpleStatement.SWITCH() != null) TreatSwitchStatement(simpleStatement, whileNode);
-                else if (simpleStatement.DO() != null) TreatDoStatement(simpleStatement, whileNode);
-                else if (simpleStatement.WHILE() != null) TreatWhileStatement(simpleStatement, whileNode);
-                else if (simpleStatement.FOR() != null) TreatForStatement(simpleStatement, whileNode);
-                else if (simpleStatement.FOREACH() != null) TreatForeachStatement(simpleStatement, whileNode);
-                else if (simpleStatement.BREAK() != null) TreatBreakStatement(simpleStatement, whileNode);
-                else if (simpleStatement.CONTINUE() != null) TreatContinueStatement(simpleStatement, whileNode);
-                else if (simpleStatement.GOTO() != null) TreatGoToStatement(simpleStatement, whileNode);
-                else if (simpleStatement.RETURN() != null) TreatReturnStatement(simpleStatement, whileNode);
-            }
+            CSharpParser.Simple_embedded_statementContext simpleStatement = embedded.simple_embedded_statement();
+            if (simpleStatement != null) TreatSimpleEmbeddedStatement(simpleStatement, whileNode);
             else TreatBlock(embedded.block(), whileNode);
 
             symbolTable.ExitScope();
         }
 
-        private void TreatForStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatForStatement(CSharpParser.ForStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's a for statement:
             IToken forToken = statement.FOR().Symbol;
@@ -373,26 +343,14 @@ namespace CSharp_Compiler.Semantics
             
             // Craeting sub tree and scope for the list of statements:
             CSharpParser.Embedded_statementContext embedded = statement.embedded_statement();
-            CSharpParser.Simple_embedded_statementContext simpleStatement = statement.simple_embedded_statement();
-            if (simpleStatement != null)
-            {
-                if (simpleStatement.IF() != null) TreatIfStatement(simpleStatement, whileNode);
-                else if (simpleStatement.SWITCH() != null) TreatSwitchStatement(simpleStatement, whileNode);
-                else if (simpleStatement.DO() != null) TreatDoStatement(simpleStatement, whileNode);
-                else if (simpleStatement.WHILE() != null) TreatWhileStatement(simpleStatement, whileNode);
-                else if (simpleStatement.FOR() != null) TreatForStatement(simpleStatement, whileNode);
-                else if (simpleStatement.FOREACH() != null) TreatForeachStatement(simpleStatement, whileNode);
-                else if (simpleStatement.BREAK() != null) TreatBreakStatement(simpleStatement, whileNode);
-                else if (simpleStatement.CONTINUE() != null) TreatContinueStatement(simpleStatement, whileNode);
-                else if (simpleStatement.GOTO() != null) TreatGoToStatement(simpleStatement, whileNode);
-                else if (simpleStatement.RETURN() != null) TreatReturnStatement(simpleStatement, whileNode);
-            }
-            else TreatBlock(embedded.block(), whileNode);
+            CSharpParser.Simple_embedded_statementContext simpleStatement = embedded.simple_embedded_statement();
+            if (simpleStatement != null) TreatSimpleEmbeddedStatement(simpleStatement, forNode);
+            else TreatBlock(embedded.block(), forNode);
 
             symbolTable.ExitScope();
         }
 
-        private void TreatForeachStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatForeachStatement(CSharpParser.ForeachStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's a foreach statement:
             IToken foreachToken = statement.FOREACH().Symbol;
@@ -417,26 +375,14 @@ namespace CSharp_Compiler.Semantics
 
             // Creating sub tree and scope for the list of statements:
             CSharpParser.Embedded_statementContext embedded = statement.embedded_statement();
-            CSharpParser.Simple_embedded_statementContext simpleStatement = statement.simple_embedded_statement();
-            if (simpleStatement != null)
-            {
-                if (simpleStatement.IF() != null) TreatIfStatement(simpleStatement, foreachNode);
-                else if (simpleStatement.SWITCH() != null) TreatSwitchStatement(simpleStatement, foreachNode);
-                else if (simpleStatement.DO() != null) TreatDoStatement(simpleStatement, foreachNode);
-                else if (simpleStatement.WHILE() != null) TreatWhileStatement(simpleStatement, foreachNode);
-                else if (simpleStatement.FOR() != null) TreatForStatement(simpleStatement, foreachNode);
-                else if (simpleStatement.FOREACH() != null) TreatForeachStatement(simpleStatement, foreachNode);
-                else if (simpleStatement.BREAK() != null) TreatBreakStatement(simpleStatement, foreachNode);
-                else if (simpleStatement.CONTINUE() != null) TreatContinueStatement(simpleStatement, foreachNode);
-                else if (simpleStatement.GOTO() != null) TreatGoToStatement(simpleStatement, foreachNode);
-                else if (simpleStatement.RETURN() != null) TreatReturnStatement(simpleStatement, foreachNode);
-            }
+            CSharpParser.Simple_embedded_statementContext simpleStatement = embedded.simple_embedded_statement();
+            if (simpleStatement != null) TreatSimpleEmbeddedStatement(simpleStatement, foreachNode);
             else TreatBlock(embedded.block(), foreachNode);
 
             symbolTable.ExitScope();
         }
 
-        private void TreatBreakStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatBreakStatement(CSharpParser.BreakStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's a break statement:
             IToken breakToken = statement.BREAK().Symbol;
@@ -446,7 +392,7 @@ namespace CSharp_Compiler.Semantics
             parentNode.AddChildIndex(breakIndex);
         }
 
-        private void TreatContinueStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatContinueStatement(CSharpParser.ContinueStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's a continue statement:
             IToken continueToken = statement.CONTINUE().Symbol;
@@ -456,7 +402,7 @@ namespace CSharp_Compiler.Semantics
             parentNode.AddChildIndex(continueIndex);
         }
 
-        private void TreatGoToStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatGoToStatement(CSharpParser.GotoStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's a goto statement:
             IToken gotoToken = statement.GOTO().Symbol;
@@ -466,7 +412,7 @@ namespace CSharp_Compiler.Semantics
             parentNode.AddChildIndex(gotoIndex);
 
             // Treating ordinary label:
-            if (statement.indentifier() != null)
+            if (statement.identifier() != null)
             {
                 IToken labelToken = statement.identifier().Start;
                 Node labelNode = ast.GetNode(labelToken, Node.Kind.Label);
@@ -505,7 +451,7 @@ namespace CSharp_Compiler.Semantics
             }
         }
 
-        private void TreatReturnStatement(CSharpParser.Simple_embedded_statementContext statement, Node parentNode)
+        private void TreatReturnStatement(CSharpParser.ReturnStatementContext statement, Node parentNode)
         {
             // Creating node indicating it's a return statement:
             IToken returnToken = statement.RETURN().Symbol;
