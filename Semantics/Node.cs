@@ -65,8 +65,7 @@ namespace CSharp_Compiler.Semantics
             GoToTarget,
             ForStatement,
             ForeachStatement,
-            IteratorDeclaration,
-            Argument
+            IteratorDeclaration
         }
 
         private IToken token;
