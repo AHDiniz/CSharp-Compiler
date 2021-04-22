@@ -88,8 +88,6 @@ namespace CSharp_Compiler.Semantics
 
         public override void EnterArgument(CSharpParser.ArgumentContext context)
         {
-            Node currentScopeNode = ast.GetNode(symbolTable.CurrentScopeNode);
-
             IToken argumentToken = context.Start;
 
             if(symbolTable.FindSymbol(argumentToken, ast) != null){
@@ -103,7 +101,7 @@ namespace CSharp_Compiler.Semantics
                     throw new Exception("Undefined method (WTF!!)");
                 }
 
-                //TODO: Need get method definition to check argument types 
+                //Get method definition to check argument types 
                 IToken methodDefinitionToken = ((CSharpParser.Method_declarationContext) parentContext).Start;
                 Node methodDeclarationNode = ast.GetNode(methodDefinitionToken, Node.Kind.MethodVariableDeclaration);
 
@@ -113,14 +111,22 @@ namespace CSharp_Compiler.Semantics
 
                 //calcule argument position
                 int argumentPosition = 0;
-                RuleContext parentContext_1 = context;
-                while((parentContext_1 = parentContext_1.Parent).GetType() == typeof(CSharpParser.ArgumentContext)){
-                    argumentPosition++;
+                RuleContext parentContext_1 = context.Parent;
+                for(int i = 0; i < parentContext_1.ChildCount; i++){
+                    if(parentContext_1.GetChild(i) == context){
+                        break;
+                    }else{
+                        argumentPosition++;
+                    }
+                }
+
+                if(ast.GetNode(methodDeclarationNode.Children[argumentPosition]).Token.Type != context.Start.Type){
+                    throw new Exception("Type on invoking method doesnt match");
                 }
                 
                 Node ArgumentNode = new Node(argumentToken, Node.Kind.Argument, null);
                 ast.AddNode(ArgumentNode);
-                currentScopeNode.AddChildIndex(ast.NodeIndex(ArgumentNode));
+                ast.GetNode(((CSharpParser.Method_invocationContext) parentContext).Start, Node.Kind.MethodInvocation).AddChildIndex(ast.NodeIndex(ArgumentNode));
                 
             }else{
                 throw new Exception("Undefined symbol");
