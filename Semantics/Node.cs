@@ -53,21 +53,7 @@ namespace CSharp_Compiler.Semantics
             PrimaryExpression,
             BracketExpression,
             ExpressionList,
-            Expression,
-            SwitchStatement,
-            SwitchSection,
-            SwitchCaseLabel,
-            SwitchDefaultLabel,
-            DoStatement,
-            BreakStatement,
-            ContinueStatement,
-            ReturnStatement,
-            GoToStatement,
-            GoToTarget,
-            ForStatement,
-            ForeachStatement,
-            IteratorDeclaration,
-            Argument
+            Expression
         }
 
         private IToken token;
