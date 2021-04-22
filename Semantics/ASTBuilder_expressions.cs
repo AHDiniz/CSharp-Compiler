@@ -8,304 +8,270 @@ namespace CSharp_Compiler.Semantics
 {
     public partial class ASTBuilder : CSharpParserBaseListener
     {
-        public override void EnterExpression(CSharpParser.ExpressionContext context)
+        //Precedencia de tipos:
+        /* Primary > Unary > Range > switch  > with  > Multiplicative > Additive
+         > Shift > Relational and type-testing > Equality >  Boolean logical AND or bitwise logical AND
+        > Boolean logical XOR or bitwise logical XOR > Boolean logical OR or bitwise logical OR
+        > Conditional AND > Conditional OR > Null-coalescing operator > Conditional operator > Assignment and lambda declaration
+        > query
+         * */
+        private void beginTreatExpression(CSharpParser.ExpressionContext context)
         {
-            
+            //comeca aqui
+            // Getting the Parent Node:
+            Node ParentNode = ast.GetNode(symbolTable.CurrentScopeNode);
+            (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de child node
+
+            if (!context.IsEmpty)
+            {
+                childTreat = treatExpression(context);
+                ParentNode.AddChildIndex(childTreat.ChildNodeIndex);
+            }
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatExpression(CSharpParser.ExpressionContext context)
+        {
             Console.WriteLine("Entering expression context.");
+            Node.Kind expressionKind = Node.Kind.Expression;
+            IToken token = null;
+            Type expressionType = null;
+            (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de child node
+            
+            if (!context.assignment().IsEmpty)
+            {
+                childTreat = treatExpressionAssignment(context.assignment());
+                expressionType = childTreat.tipo;
+            }
+            else //non_assignment_expression | REF non_assignment_expression;
+            {
+                childTreat = treatExpressionNonAssignment(context.non_assignment_expression());
+                expressionType = childTreat.tipo;
+                if (context.REF() != null)
+                {
+                    token = context.REF().Symbol;
+                    expressionType = new Type(token);
+                }
+            }
+            // Creating the expression node and adding it to the AST:
+            Node expressionNode = new Node(token, expressionKind, expressionType);
+            ast.AddNode(expressionNode);
+            //add child 
+            expressionNode.AddChildIndex(childTreat.ChildNodeIndex);
+            return (ast.NodeIndex(expressionNode), expressionType);
         }
 
-        public override void ExitExpression(CSharpParser.ExpressionContext context)
+        private (int ChildNodeIndex, Type tipo) treatExpressionAssignment(CSharpParser.AssignmentContext context)
         {
-            
-            Console.WriteLine("Exiting expression context.");
-        }
-
-        public override void EnterNon_assignment_expression(CSharpParser.Non_assignment_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering non_assignment_expression context.");
-        }
-
-        public override void ExitNon_assignment_expression(CSharpParser.Non_assignment_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting non_assignment_expression context.");
-        }
-
-        public override void EnterAssignment(CSharpParser.AssignmentContext context)
-        {
-            
             Console.WriteLine("Entering assignment context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
+            (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
+
+            if (!context.unary_expression().IsEmpty && !context.assignment_operator().IsEmpty && !context.expression().IsEmpty)
+            {
+                //unary tem prioridade de tipo
+                //subnode para agrupar node dos tres
+                childTreat = treatUnaryExpression(context.unary_expression());
+                currentType = childTreat.tipo;
+                //criando node
+                currentNode =  new Node(token, currentKind, currentType);
+                ast.AddNode(currentNode);
+                //adicionando ao subnode
+                currentNode.AddChildIndex(childTreat.ChildNodeIndex);//unary 
+                childTreat = treatAssignmentOperator(context.assignment_operator());
+                currentNode.AddChildIndex(childTreat.ChildNodeIndex);//assign op
+                childTreat = treatExpression(context.expression());
+                currentNode.AddChildIndex(childTreat.ChildNodeIndex); // expression
+            }
+            else //unary_expression '??=' throwable_expression;
+            {
+                childTreat = treatUnaryExpression(context.unary_expression());
+                currentType = childTreat.tipo;
+                //criando node
+                token = context.OP_COALESCING_ASSIGNMENT().Symbol;
+                currentNode = new Node(token, currentKind, currentType);
+                ast.AddNode(currentNode);
+                //adicionando child
+                currentNode.AddChildIndex(childTreat.ChildNodeIndex);//unary 
+                //childTreat = treatthrowable_expression(context.unary_expression());
+                //currentNode.AddChildIndex(childTreat.ChildNodeIndex);
+            }
+            return (ast.NodeIndex(currentNode), currentType);
+        }
+        
+        private (int ChildNodeIndex, Type tipo) treatExpressionNonAssignment(CSharpParser.Non_assignment_expressionContext context)
+        {
+            Console.WriteLine("Entering non_assignment_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionNonAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
+            (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
+            if (!context.lambda_expression().IsEmpty)
+            {
+                childTreat = treatLambdaExpression(context.lambda_expression());
+                currentType = childTreat.tipo;
+                currentNode = new Node(token, currentKind, currentType);
+                ast.AddNode(currentNode);
+                //adicionando child
+                currentNode.AddChildIndex(childTreat.ChildNodeIndex);
+            }
+            else if (!context.query_expression().IsEmpty)
+            {
+                childTreat = treatQueryExpression(context.query_expression());
+                currentType = childTreat.tipo;
+                currentNode = new Node(token, currentKind, currentType);
+                ast.AddNode(currentNode);
+                //adicionando child
+                currentNode.AddChildIndex(childTreat.ChildNodeIndex);
+            }
+            else //conditional_expression
+            {
+                childTreat = treatConditionalExpression(context.conditional_expression());
+                currentType = childTreat.tipo;
+                currentNode = new Node(token, currentKind, currentType);
+                ast.AddNode(currentNode);
+                //adicionando child
+                currentNode.AddChildIndex(childTreat.ChildNodeIndex);
+            }
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
-        public override void ExitAssignment(CSharpParser.AssignmentContext context)
+        private (int ChildNodeIndex, Type tipo) treatLambdaExpression(CSharpParser.Lambda_expressionContext context)
         {
             
-            Console.WriteLine("Exiting assignment context.");
+            Console.WriteLine("Entering lambda_expression context.");
+            Node.Kind currentKind = Node.Kind.LambdaExpression;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
+            (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
+            //ASYNC? anonymous_function_signature right_arrow anonymous_function_body;
+            //prioridade async e anonymous function
+            if(context.ASYNC().Symbol != null)
+            {
+                token = context.ASYNC().Symbol;
+                currentType = new Type(token);
+            }
+            //criacao dos nós filhos 
+            //
+            //      A FAZER
+            //
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
-        public override void EnterAssignment_operator(CSharpParser.Assignment_operatorContext context)
+        private (int ChildNodeIndex, Type tipo) treatQueryExpression(CSharpParser.Query_expressionContext context)
         {
-            
-            Console.WriteLine("Entering assignment_operator context.");
-        }
-
-        public override void ExitAssignment_operator(CSharpParser.Assignment_operatorContext context)
-        {
-            
-            Console.WriteLine("Exiting assignment_operator context.");
-        }
-
-        public override void EnterConditional_expression(CSharpParser.Conditional_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering conditional_expression context.");
-        }
-
-        public override void ExitConditional_expression(CSharpParser.Conditional_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting conditional_expression context.");
-        }
-
-        public override void EnterNull_coalescing_expression(CSharpParser.Null_coalescing_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering null_coalescing_expression context.");
-        }
-
-        public override void ExitNull_coalescing_expression(CSharpParser.Null_coalescing_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting null_coalescing_expression context.");
-        }
-
-        public override void EnterConditional_or_expression(CSharpParser.Conditional_or_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering conditional_or_expression context.");
-        }
-
-        public override void ExitConditional_or_expression(CSharpParser.Conditional_or_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting conditional_or_expression context.");
-        }
-
-        public override void EnterConditional_and_expression(CSharpParser.Conditional_and_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering conditional_and_expression context.");
-        }
-
-        public override void ExitConditional_and_expression(CSharpParser.Conditional_and_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting conditional_and_expression context.");
-        }
-
-        public override void EnterInclusive_or_expression(CSharpParser.Inclusive_or_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering inclusive_or_expression context.");
-        }
-
-        public override void ExitInclusive_or_expression(CSharpParser.Inclusive_or_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting inclusive_or_expression context.");
-        }
-
-        public override void EnterExclusive_or_expression(CSharpParser.Exclusive_or_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering exclusive_or_expression context.");
-        }
-
-        public override void ExitExclusive_or_expression(CSharpParser.Exclusive_or_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting exclusive_or_expression context.");
-        }
-
-        public override void EnterAnd_expression(CSharpParser.And_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering and_expression context.");
-        }
-
-        public override void ExitAnd_expression(CSharpParser.And_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting and_expression context.");
-        }
-
-        public override void EnterEquality_expression(CSharpParser.Equality_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering equality_expression context.");
-        }
-
-        public override void ExitEquality_expression(CSharpParser.Equality_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting equality_expression context.");
-        }
-
-        public override void EnterRelational_expression(CSharpParser.Relational_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering relational_expression context.");
-        }
-
-        public override void ExitRelational_expression(CSharpParser.Relational_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting relational_expression context.");
-        }
-
-        public override void EnterShift_expression(CSharpParser.Shift_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering shift_expression context.");
-        }
-
-        public override void ExitShift_expression(CSharpParser.Shift_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting shift_expression context.");
-        }
-
-        public override void EnterAdditive_expression(CSharpParser.Additive_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering additive_expression context.");
-        }
-
-        public override void ExitAdditive_expression(CSharpParser.Additive_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting additive_expression context.");
-        }
-
-        public override void EnterMultiplicative_expression(CSharpParser.Multiplicative_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering multiplicative_expression context.");
-        }
-
-        public override void ExitMultiplicative_expression(CSharpParser.Multiplicative_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting multiplicative_expression context.");
-        }
-
-        public override void EnterSwitch_expression(CSharpParser.Switch_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering switch_expression context.");
-        }
-
-        public override void ExitSwitch_expression(CSharpParser.Switch_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting switch_expression context.");
-        }
-
-        public override void EnterSwitch_expression_arms(CSharpParser.Switch_expression_armsContext context)
-        {
-            
-            Console.WriteLine("Entering switch_expression_arms context.");
-        }
-
-        public override void ExitSwitch_expression_arms(CSharpParser.Switch_expression_armsContext context)
-        {
-            
-            Console.WriteLine("Exiting switch_expression_arms context.");
-        }
-
-        public override void EnterSwitch_expression_arm(CSharpParser.Switch_expression_armContext context)
-        {
-            
-            Console.WriteLine("Entering switch_expression_arm context.");
-        }
-
-        public override void ExitSwitch_expression_arm(CSharpParser.Switch_expression_armContext context)
-        {
-            
-            Console.WriteLine("Exiting switch_expression_arm context.");
-        }
-
-        public override void EnterRange_expression(CSharpParser.Range_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering range_expression context.");
-        }
-
-        public override void ExitRange_expression(CSharpParser.Range_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting range_expression context.");
-        }
-
-        public override void EnterUnary_expression(CSharpParser.Unary_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering unary_expression context.");
-        }
-
-        public override void ExitUnary_expression(CSharpParser.Unary_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting unary_expression context.");
-        }
-
-        public override void EnterPrimary_expression(CSharpParser.Primary_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering primary_expression context.");
-        }
-
-        public override void ExitPrimary_expression(CSharpParser.Primary_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting primary_expression context.");
-        }
-
-        public override void EnterBracket_expression(CSharpParser.Bracket_expressionContext context)
-        {
-            
-            Console.WriteLine("Entering bracket_expression context.");
-        }
-
-        public override void ExitBracket_expression(CSharpParser.Bracket_expressionContext context)
-        {
-            
-            Console.WriteLine("Exiting bracket_expression context.");
-        }
-
-        public override void EnterExpression_list(CSharpParser.Expression_listContext context)
-        {
-            
-            Console.WriteLine("Entering expression_list context.");
-        }
-
-        public override void ExitExpression_list(CSharpParser.Expression_listContext context)
-        {
-            
-            Console.WriteLine("Exiting expression_list context.");
-        }
-
-        public override void EnterQuery_expression(CSharpParser.Query_expressionContext context)
-        {
-            
             Console.WriteLine("Entering query_expression context.");
+            Node.Kind currentKind = Node.Kind.LambdaExpression;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
+            (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
         }
 
-        public override void ExitQuery_expression(CSharpParser.Query_expressionContext context)
+        private (int ChildNodeIndex, Type tipo) treatConditionalExpression(CSharpParser.Conditional_expressionContext context)
         {
-            
-            Console.WriteLine("Exiting query_expression context.");
+
         }
+
+        private (int ChildNodeIndex, Type tipo) treatAssignmentOperator(CSharpParser.Assignment_operatorContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatCoalescingExpression(CSharpParser.Null_coalescing_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatConditionalOrExpression(CSharpParser.Conditional_or_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatConditionalAndExpression(CSharpParser.Conditional_and_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatInclusiveOrExpression(CSharpParser.Inclusive_or_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatAndExpression(CSharpParser.And_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatEqualityExpression(CSharpParser.Equality_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatRelationalExpression(CSharpParser.Relational_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatShiftExpression(CSharpParser.Shift_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatAdditiveExpression(CSharpParser.Additive_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatMultiplicativeExpression(CSharpParser.Multiplicative_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatSwitchExpression(CSharpParser.Switch_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatSwitchExpressionArms(CSharpParser.Switch_expression_armsContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatSwitchExpressionArm(CSharpParser.Switch_expression_armContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatRangeExpression(CSharpParser.Range_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatUnaryExpression(CSharpParser.Unary_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatPrimaryExpression(CSharpParser.Primary_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatBracketExpression(CSharpParser.Bracket_expressionContext context)
+        {
+
+        }
+
+        private (int ChildNodeIndex, Type tipo) treatExpressionList(CSharpParser.Expression_listContext context)
+        {
+
+        }
+
+
     }
 }
