@@ -14,6 +14,7 @@ namespace CSharp_Compiler.Semantics
             EqualityComparision,
             MemberVariableDeclaration,
             MethodVariableDeclaration,
+            MethodDeclaration,
             ClassDefinition,
             EnumDefinition,
             MainScope,
