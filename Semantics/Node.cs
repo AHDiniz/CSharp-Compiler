@@ -26,6 +26,7 @@ namespace CSharp_Compiler.Semantics
             IfStatementBody,
             ElseStatement,
             ElseStatementBody,
+            Argument
         }
 
         private IToken token;

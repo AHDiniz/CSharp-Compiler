@@ -76,7 +76,7 @@ namespace CSharp_Compiler.Semantics
 
         public override void EnterArgument_list(CSharpParser.Argument_listContext context)
         {
-            
+
             Console.WriteLine("Entering argument_list context.");
         }
 
@@ -88,6 +88,38 @@ namespace CSharp_Compiler.Semantics
 
         public override void EnterArgument(CSharpParser.ArgumentContext context)
         {
+
+            Node currentScopeNode = ast.GetNode(symbolTable.CurrentScopeNode);
+
+            IToken argumentToken = context.Start;
+
+            if(symbolTable.FindSymbol(argumentToken, ast) != null){
+                RuleContext parentContext = context;
+                while((parentContext = parentContext.Parent) != null){
+                    if(parentContext.GetType() == typeof(CSharpParser.Method_invocationContext)){
+                        break;
+                    }
+                }
+                if(parentContext == null){
+                    throw new Exception("Undefined method (WTF!!)");
+                }
+                //TODO: Need get method definition to check argument types 
+
+
+                //calc argument position
+                int argumentPosition = 0;
+                RuleContext parentContext_1 = context;
+                while((parentContext_1 = parentContext_1.Parent).GetType() == typeof(CSharpParser.ArgumentContext)){
+                    argumentPosition++;
+                }
+                
+                Node ArgumentNode = new Node(argumentToken, Node.Kind.Argument, null);
+                ast.AddNode(ArgumentNode);
+                currentScopeNode.AddChildIndex(ast.NodeIndex(ArgumentNode));
+                
+            }else{
+                throw new Exception("Undefined symbol");
+            }
             
             Console.WriteLine("Entering argument context.");
         }
