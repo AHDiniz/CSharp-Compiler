@@ -434,5 +434,20 @@ namespace CSharp_Compiler.Semantics
             parentNode.AddChildIndex(ast.NodeIndex(enumNode));
             ast.AddNode(enumNode);
         }
+
+        public override void EnterMethod_invocation(CSharpParser.Method_invocationContext context){
+            Node parentNode = ast.GetNode(symbolTable.CurrentScopeNode);
+
+            if(symbolTable.FindSymbol(context.Start, ast) == null){
+                throw new Exception("Method token undefined");
+            }
+
+            Node methodInvocationNode = new Node(context.Start, Node.Kind.MethodInvocation, null);
+
+            parentNode.AddChildIndex(ast.NodeIndex(methodInvocationNode));
+            ast.AddNode(methodInvocationNode);
+            
+            symbolTable.EnterScope(ast.NodeIndex(methodInvocationNode));
+        }
     }
 }
