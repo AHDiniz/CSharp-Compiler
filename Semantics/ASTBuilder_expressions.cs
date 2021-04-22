@@ -231,102 +231,242 @@ namespace CSharp_Compiler.Semantics
         
         private (int ChildNodeIndex, Type tipo) treatConditionalExpression(CSharpParser.Conditional_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatAssignmentOperator(CSharpParser.Assignment_operatorContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatCoalescingExpression(CSharpParser.Null_coalescing_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatConditionalOrExpression(CSharpParser.Conditional_or_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatConditionalAndExpression(CSharpParser.Conditional_and_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatInclusiveOrExpression(CSharpParser.Inclusive_or_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatAndExpression(CSharpParser.And_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatEqualityExpression(CSharpParser.Equality_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatRelationalExpression(CSharpParser.Relational_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatShiftExpression(CSharpParser.Shift_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatAdditiveExpression(CSharpParser.Additive_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatMultiplicativeExpression(CSharpParser.Multiplicative_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatSwitchExpression(CSharpParser.Switch_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatSwitchExpressionArms(CSharpParser.Switch_expression_armsContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatSwitchExpressionArm(CSharpParser.Switch_expression_armContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatRangeExpression(CSharpParser.Range_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatUnaryExpression(CSharpParser.Unary_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatPrimaryExpression(CSharpParser.Primary_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatBracketExpression(CSharpParser.Bracket_expressionContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatExpressionList(CSharpParser.Expression_listContext context)
         {
+            Console.WriteLine("Entering conditional_expression context.");
+            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            IToken token = null;
+            Type currentType = null;
+            Node currentNode = null;
 
+
+            return (ast.NodeIndex(currentNode), currentType);
         }
 
 
