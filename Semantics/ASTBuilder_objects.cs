@@ -446,8 +446,8 @@ namespace CSharp_Compiler.Semantics
 
             parentNode.AddChildIndex(ast.NodeIndex(methodInvocationNode));
             ast.AddNode(methodInvocationNode);
-            
-            symbolTable.EnterScope(ast.NodeIndex(methodInvocationNode));
+
+            //symbolTable.EnterScope(ast.NodeIndex(methodInvocationNode));
         }
     }
 }
