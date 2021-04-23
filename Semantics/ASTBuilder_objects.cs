@@ -436,6 +436,7 @@ namespace CSharp_Compiler.Semantics
         }
 
         public override void EnterMethod_invocation(CSharpParser.Method_invocationContext context){
+            Console.WriteLine("Entering method_invocation context");
             Node parentNode = ast.GetNode(symbolTable.CurrentScopeNode);
 
             if(symbolTable.FindSymbol(context.Start, ast) == null){
@@ -448,6 +449,10 @@ namespace CSharp_Compiler.Semantics
             ast.AddNode(methodInvocationNode);
 
             //symbolTable.EnterScope(ast.NodeIndex(methodInvocationNode));
+        }
+
+        public override void EnterMember_access(CSharpParser.Member_accessContext context){
+            Console.WriteLine("Entering member_access context");
         }
     }
 }
