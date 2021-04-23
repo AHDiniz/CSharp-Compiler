@@ -66,7 +66,8 @@ namespace CSharp_Compiler.Semantics
             BracketExpression,
             ExpressionList,
             Expression,
-            MethodInvocation
+            MethodInvocation,
+            ExclusiveOrExpression
         }
 
         private IToken token;
