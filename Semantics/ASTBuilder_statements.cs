@@ -498,7 +498,8 @@ namespace CSharp_Compiler.Semantics
                     int targetIndex = ast.NodeIndex(targetNode);
                     gotoNode.AddChildIndex(targetIndex);
 
-                    // TODO: Treat condition expression:
+                    // Treat condition expression:
+                    beginTreatExpression(statement.expression(), gotoNode);
                 }
                 else
                 {
@@ -521,7 +522,8 @@ namespace CSharp_Compiler.Semantics
             int returnIndex = ast.NodeIndex(returnNode);
             parentNode.AddChildIndex(returnIndex);
 
-            // TODO: Creating sub tree for the expression:
+            // Creating sub tree for the expression:
+            beginTreatExpression(statement.expression(), returnNode);
         }
     }
 }
