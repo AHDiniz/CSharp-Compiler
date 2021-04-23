@@ -115,16 +115,26 @@ namespace CSharp_Compiler.Semantics
 
         private void TreatSimpleEmbeddedStatement(CSharpParser.Simple_embedded_statementContext context, Node parentNode)
         {
-            if (context is CSharpParser.IfStatementContext) TreatIfStatement(ifContext, parentNode);
-            else if (context is CSharpParser.SwitchStatementContext) TreatSwitchStatement(switchContext, parentNode);
-            else if (context is CSharpParser.DoStatementContext) TreatDoStatement(doContext, parentNode);
-            else if (context is CSharpParser.WhileStatementContext) TreatWhileStatement(whileContext, parentNode);
-            else if (context is CSharpParser.ForStatementContext) TreatForStatement(forContext, parentNode);
-            else if (context is CSharpParser.ForeachStatementContext) TreatForeachStatement(foreachContext, parentNode);
-            else if (context is CSharpParser.BreakStatementContext) TreatBreakStatement(breakContext, parentNode);
-            else if (context is CSharpParser.ContinueStatementContext) TreatContinueStatement(continueContext, parentNode);
-            else if (context is CSharpParser.GotoStatementContext) TreatGoToStatement(gotoContext, parentNode);
-            else if (context is CSharpParser.ReturnStatementContext) TreatReturnStatement(returnContext, parentNode);
+            if (context is CSharpParser.IfStatementContext)
+                TreatIfStatement((CSharpParser.IfStatementContext)context, parentNode);
+            else if (context is CSharpParser.SwitchStatementContext)
+                TreatSwitchStatement((CSharpParser.SwitchStatementContext)context, parentNode);
+            else if (context is CSharpParser.DoStatementContext)
+                TreatDoStatement((CSharpParser.DoStatementContext)context, parentNode);
+            else if (context is CSharpParser.WhileStatementContext)
+                TreatWhileStatement((CSharpParser.WhileStatementContext)context, parentNode);
+            else if (context is CSharpParser.ForStatementContext)
+                TreatForStatement((CSharpParser.ForStatementContext)context, parentNode);
+            else if (context is CSharpParser.ForeachStatementContext)
+                TreatForeachStatement((CSharpParser.ForeachStatementContext)context, parentNode);
+            else if (context is CSharpParser.BreakStatementContext)
+                TreatBreakStatement((CSharpParser.BreakStatementContext)context, parentNode);
+            else if (context is CSharpParser.ContinueStatementContext)
+                TreatContinueStatement((CSharpParser.ContinueStatementContext)context, parentNode);
+            else if (context is CSharpParser.GotoStatementContext)
+                TreatGoToStatement((CSharpParser.GotoStatementContext)context, parentNode);
+            else if (context is CSharpParser.ReturnStatementContext)
+                TreatReturnStatement((CSharpParser.ReturnStatementContext)context, parentNode);
             else if (context is CSharpParser.ExpressionStatementContext)
             {
                 CSharpParser.ExpressionStatementContext expr = (CSharpParser.ExpressionStatementContext)context;
