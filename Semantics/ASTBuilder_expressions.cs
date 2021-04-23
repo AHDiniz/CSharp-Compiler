@@ -547,7 +547,7 @@ namespace CSharp_Compiler.Semantics
             }
             else
             {
-                childTreat = treatAndExpression(context.and_expression()[0]);
+                childTreat = treatEqualityExpression(context.equality_expression()[0]);
                 currentNode = ast.GetNode(childTreat.ChildNodeIndex);
                 currentType = childTreat.tipo;
             }
@@ -560,7 +560,7 @@ namespace CSharp_Compiler.Semantics
         private (int ChildNodeIndex, Type tipo) treatEqualityExpression(CSharpParser.Equality_expressionContext context)
         {
             Console.WriteLine("Entering conditional_expression context.");
-            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            Node.Kind currentKind = Node.Kind.EqualityComparision;
             IToken token = null;
             Type currentType = null;
             Node currentNode = null;
