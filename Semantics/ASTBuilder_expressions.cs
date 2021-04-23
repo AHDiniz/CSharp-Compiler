@@ -480,7 +480,7 @@ namespace CSharp_Compiler.Semantics
 
         private (int ChildNodeIndex, Type tipo) treatExclusiveOrExpression(CSharpParser.Exclusive_or_expressionContext context)
         {
-            Console.WriteLine("Entering conditional_or_expression context.");
+            Console.WriteLine("Entering exclusive_or_expression context.");
             Node.Kind currentKind = Node.Kind.ExclusiveOrExpression;
             IToken token = null;
             Type currentType = null;
@@ -518,7 +518,7 @@ namespace CSharp_Compiler.Semantics
 
         private (int ChildNodeIndex, Type tipo) treatAndExpression(CSharpParser.And_expressionContext context)
         {
-            Console.WriteLine("Entering conditional_expression context.");
+            Console.WriteLine("Entering and_expression context.");
             Node.Kind currentKind = Node.Kind.AndExpression;
             IToken token = null;
             Type currentType = null;
@@ -559,23 +559,64 @@ namespace CSharp_Compiler.Semantics
 
         private (int ChildNodeIndex, Type tipo) treatEqualityExpression(CSharpParser.Equality_expressionContext context)
         {
-            Console.WriteLine("Entering conditional_expression context.");
+            Console.WriteLine("Entering equality_expression context.");
             Node.Kind currentKind = Node.Kind.EqualityComparision;
             IToken token = null;
             Type currentType = null;
             Node currentNode = null;
+            (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
+            List<int> childIndex = new List<int>();
 
+            if (context.OP_EQ()[0].Symbol!=null || context.OP_NE()[0].Symbol != null)
+            {
+                //mais de um
+                if (context.OP_EQ()[0].Symbol != null)
+                {
+                    token = context.OP_EQ()[0].Symbol;
+                }else token = context.OP_NE()[0].Symbol;
+                foreach (CSharpParser.Relational_expressionContext i in context.relational_expression())
+                {
+                    if (!i.IsEmpty)
+                    {
+                        childTreat = treatRelationalExpression(i);
+                        currentType = childTreat.tipo;
+                        childIndex.Add(childTreat.ChildNodeIndex);
+                    }
+                }
+                currentNode = new Node(token, currentKind, currentType);
+                ast.AddNode(currentNode);
+                foreach (int i in childIndex)
+                {
+                    childIndex.Add(i);
+                }
+
+            }
 
             return (ast.NodeIndex(currentNode), currentType);
         }
 
         private (int ChildNodeIndex, Type tipo) treatRelationalExpression(CSharpParser.Relational_expressionContext context)
         {
-            Console.WriteLine("Entering conditional_expression context.");
-            Node.Kind currentKind = Node.Kind.ExpressionAssignment;
+            Console.WriteLine("Entering relational_expression context.");
+            Node.Kind currentKind = Node.Kind.RelationalExpression;
             IToken token = null;
             Type currentType = null;
             Node currentNode = null;
+            (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
+            List<int> childIndex = new List<int>();
+            if (context.shift_expression().Length > 1)
+            {
+                foreach(CSharpParser.Shift_expressionContext i in context.shift_expression())
+                {
+                    childTreat = treatShiftExpression(i);
+                    childIndex.Add(childTreat.ChildNodeIndex);
+                }
+                foreach (CSharpParser.IsTypeContext i in context.isType()) 
+                {
+                    //childTreat=treatIsType(i);
+                    //childIndex.Add(childTreat.ChildNodeIndex);
+                }
+            }
 
 
             return (ast.NodeIndex(currentNode), currentType);
