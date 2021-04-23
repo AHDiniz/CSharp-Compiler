@@ -15,11 +15,11 @@ namespace CSharp_Compiler.Semantics
         > Conditional AND > Conditional OR > Null-coalescing operator > Conditional operator > Assignment and lambda declaration
         > query
          * */
-        private void beginTreatExpression(CSharpParser.ExpressionContext context)
+        private void beginTreatExpression(CSharpParser.ExpressionContext context, Node parentNode)
         {
             //comeca aqui
             // Getting the Parent Node:
-            Node ParentNode = ast.GetNode(symbolTable.CurrentScopeNode);
+            Node ParentNode = parentNode;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de child node
 
             if (!context.IsEmpty)

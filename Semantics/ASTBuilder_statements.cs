@@ -115,27 +115,21 @@ namespace CSharp_Compiler.Semantics
 
         private void TreatSimpleEmbeddedStatement(CSharpParser.Simple_embedded_statementContext context, Node parentNode)
         {
-            CSharpParser.IfStatementContext ifContext = new CSharpParser.IfStatementContext(context);
-            CSharpParser.SwitchStatementContext switchContext = new CSharpParser.SwitchStatementContext(context);
-            CSharpParser.DoStatementContext doContext = new CSharpParser.DoStatementContext(context);
-            CSharpParser.WhileStatementContext whileContext = new CSharpParser.WhileStatementContext(context);
-            CSharpParser.ForStatementContext forContext = new CSharpParser.ForStatementContext(context);
-            CSharpParser.ForeachStatementContext foreachContext = new CSharpParser.ForeachStatementContext(context);
-            CSharpParser.BreakStatementContext breakContext = new CSharpParser.BreakStatementContext(context);
-            CSharpParser.ContinueStatementContext continueContext = new CSharpParser.ContinueStatementContext(context);
-            CSharpParser.GotoStatementContext gotoContext = new CSharpParser.GotoStatementContext(context);
-            CSharpParser.ReturnStatementContext returnContext = new CSharpParser.ReturnStatementContext(context);
-
-            if (ifContext.IF() != null) TreatIfStatement(ifContext, parentNode);
-            else if (switchContext.SWITCH() != null) TreatSwitchStatement(switchContext, parentNode);
-            else if (doContext.DO() != null) TreatDoStatement(doContext, parentNode);
-            else if (whileContext.WHILE() != null) TreatWhileStatement(whileContext, parentNode);
-            else if (forContext.FOR() != null) TreatForStatement(forContext, parentNode);
-            else if (foreachContext.FOREACH() != null) TreatForeachStatement(foreachContext, parentNode);
-            else if (breakContext.BREAK() != null) TreatBreakStatement(breakContext, parentNode);
-            else if (continueContext.CONTINUE() != null) TreatContinueStatement(continueContext, parentNode);
-            else if (gotoContext.GOTO() != null) TreatGoToStatement(gotoContext, parentNode);
-            else if (returnContext.RETURN() != null) TreatReturnStatement(returnContext, parentNode);
+            if (context is CSharpParser.IfStatementContext) TreatIfStatement(ifContext, parentNode);
+            else if (context is CSharpParser.SwitchStatementContext) TreatSwitchStatement(switchContext, parentNode);
+            else if (context is CSharpParser.DoStatementContext) TreatDoStatement(doContext, parentNode);
+            else if (context is CSharpParser.WhileStatementContext) TreatWhileStatement(whileContext, parentNode);
+            else if (context is CSharpParser.ForStatementContext) TreatForStatement(forContext, parentNode);
+            else if (context is CSharpParser.ForeachStatementContext) TreatForeachStatement(foreachContext, parentNode);
+            else if (context is CSharpParser.BreakStatementContext) TreatBreakStatement(breakContext, parentNode);
+            else if (context is CSharpParser.ContinueStatementContext) TreatContinueStatement(continueContext, parentNode);
+            else if (context is CSharpParser.GotoStatementContext) TreatGoToStatement(gotoContext, parentNode);
+            else if (context is CSharpParser.ReturnStatementContext) TreatReturnStatement(returnContext, parentNode);
+            else if (context is CSharpParser.ExpressionStatementContext)
+            {
+                CSharpParser.ExpressionStatementContext expr = (CSharpParser.ExpressionStatementContext)context;
+                beginTreatExpression(expr.expression(), parentNode);
+            }
             else
             {
                 Console.WriteLine("FATAL ERROR: Could not define the type of simple_embedded_statement rule.");
@@ -145,16 +139,14 @@ namespace CSharp_Compiler.Semantics
 
         private void TreatVariableInitializer(CSharpParser.Local_variable_initializerContext initializer, Node parentNode)
         {
-            Action<CSharpParser.Array_initializerContext, Node> TreatArrayInit = (arrayInit, parent) =>
+            Action<CSharpParser.Array_initializerContext, Node> TreatArrayInit = null;
+            TreatArrayInit = (arrayInit, parent) =>
             {
                 CSharpParser.Variable_initializerContext[] varInit = arrayInit.variable_initializer();
                 foreach (CSharpParser.Variable_initializerContext varInitializer in varInit)
                 {
                     CSharpParser.ExpressionContext expression = varInitializer.expression();
-                    if (expression != null)
-                    {
-                        // Treat expression here
-                    }
+                    if (expression != null) beginTreatExpression(expression, parentNode);
                     else
                     {
                         CSharpParser.Array_initializerContext a = varInitializer.array_initializer();
@@ -164,10 +156,7 @@ namespace CSharp_Compiler.Semantics
             };
 
             CSharpParser.ExpressionContext expression = initializer.expression();
-            if (expression != null)
-            {
-                // Treat expression here
-            }
+            if (expression != null) beginTreatExpression(expression, parentNode);
             else
             {
                 CSharpParser.Array_initializerContext array = initializer.array_initializer();
@@ -187,13 +176,14 @@ namespace CSharp_Compiler.Semantics
             int ifNodeIndex = ast.NodeIndex(ifNode);
             parentNode.AddChildIndex(ifNodeIndex);
 
-            // TODO: Creating sub tree for the condition expression:
+            // Creating sub tree for the condition expression:
+            beginTreatExpression(statement.expression(), ifNode);
 
             // Creating a node and a scope for the if body:
             Node ifBodyNode = new Node(null, Node.Kind.IfStatementBody, null);
             ast.AddNode(ifBodyNode);
             int ifBodyNodeIndex = ast.NodeIndex(ifBodyNode);
-            ifNodeIndex.AddChildIndex(ifBodyNodeIndex);
+            ifNode.AddChildIndex(ifBodyNodeIndex);
             // The node with the statements will be a child of the if body node
 
             CSharpParser.If_bodyContext[] ifBodies = statement.if_body();
@@ -232,9 +222,10 @@ namespace CSharp_Compiler.Semantics
             Node switchNode = new Node(switchToken, Node.Kind.SwitchStatement, null);
             ast.AddNode(switchNode);
             int switchNodeIndex = ast.NodeIndex(switchNode);
-            parentNode.AddChildIndex(switchNode);
+            parentNode.AddChildIndex(switchNodeIndex);
 
-            // TODO: Creating sub tree for the expression being switched:
+            // Creating sub tree for the expression being switched:
+            beginTreatExpression(statement.expression(), switchNode);
             
             // For each switch section:
             CSharpParser.Switch_sectionContext[] sections = statement.switch_section();
@@ -247,10 +238,10 @@ namespace CSharp_Compiler.Semantics
                 switchNode.AddChildIndex(sectionIndex);
 
                 // Entering the section scope:
-                symbolTable.EnterScope(sectionNode);
+                symbolTable.EnterScope(sectionIndex);
 
                 // Treating the switch label:
-                CSharpParser.Switch_labelContext[] labels = sections.switch_label();
+                CSharpParser.Switch_labelContext[] labels = section.switch_label();
                 foreach (CSharpParser.Switch_labelContext label in labels)
                 {
                     // Creating node for the default label:
@@ -273,9 +264,9 @@ namespace CSharp_Compiler.Semantics
                 // Treating the statements list:
                 CSharpParser.Statement_listContext statementList = section.statement_list();
                 CSharpParser.StatementContext[] statements = statementList.statement();
-                foreach (CSharpParser.StatementContext statement in statements)
+                foreach (CSharpParser.StatementContext s in statements)
                 {
-                    TreatStatement(statement, sectionNode);
+                    TreatStatement(s, sectionNode);
                 }
 
                 // Exiting the section scope:
@@ -299,7 +290,8 @@ namespace CSharp_Compiler.Semantics
             if (simpleStatement != null) TreatSimpleEmbeddedStatement(simpleStatement, doNode);
             else TreatBlock(embedded.block(), doNode);
             
-            // TODO: Creating sub tree for the condition expression:
+            // Creating sub tree for the condition expression:
+            beginTreatExpression(statement.expression(), doNode);
             
             symbolTable.ExitScope();
         }
@@ -315,7 +307,8 @@ namespace CSharp_Compiler.Semantics
 
             symbolTable.EnterScope(whileIndex);
 
-            // TODO: Creating sub tree for the condition expression:
+            // Creating sub tree for the condition expression:
+            beginTreatExpression(statement.expression(), whileNode);
 
             // Craeting sub tree and scope for the list of statements:
             CSharpParser.Embedded_statementContext embedded = statement.embedded_statement();
@@ -337,9 +330,66 @@ namespace CSharp_Compiler.Semantics
 
             symbolTable.EnterScope(forIndex);
 
-            // TODO: Craeting sub tree for the initializer expression:
-            // TODO: Creating sub tree for the condition expression:
-            // TODO: Creating sub tree for the iterator:
+            // Craeting sub tree for the initializer expression:
+            CSharpParser.For_initializerContext initContext = statement.for_initializer();
+            if (initContext != null)
+            {
+                CSharpParser.Local_variable_declarationContext declContext = initContext.local_variable_declaration();
+                if (declContext != null)
+                {
+                    // Getting the local variables modifiers:
+                    Symbol.ModifierFlag modFlags = Symbol.ModifierFlag.None;
+                    if (declContext.REF() != null) modFlags |= Symbol.ModifierFlag.Ref;
+                    if (declContext.READONLY() != null) modFlags |= Symbol.ModifierFlag.ReadOnly;
+
+                    // Creating the local variables symbols:
+                    IToken typeToken = declContext.local_variable_type().Start;
+                    Type t = symbolTable.FindType(typeToken);
+                    if (t == null)
+                    {
+                        Console.WriteLine("FATAL ERROR: Unidentified type found.");
+                        Environment.Exit(1);
+                    }
+                    MethodSymbol ownerMethod = (MethodSymbol)symbolTable.FindSymbol(parentNode.Token, ast);
+                    CSharpParser.Local_variable_declaratorContext[] declarators = 
+                        declContext.local_variable_declarator();
+                    foreach (CSharpParser.Local_variable_declaratorContext declarator in declarators)
+                    {
+                        // Creating the variable symbol:
+                        CSharpParser.IdentifierContext identifier = declarator.identifier();
+                        IToken variableID = identifier.Start;
+                        VariableSymbol variableSymbol = new VariableSymbol(modFlags, ownerMethod);
+                        symbolTable.AddSymbol(variableID, variableSymbol);
+
+                        // Creating the variable node and adding it to the AST:
+                        Node variableNode = new Node(variableID, Node.Kind.MethodVariableDeclaration, t);
+                        ast.AddNode(variableNode);
+                        int varDeclIndex = ast.NodeIndex(variableNode);
+                        parentNode.AddChildIndex(varDeclIndex);
+
+                        // Treating the variable initialization:
+                        TreatVariableInitializer(declarator.local_variable_initializer(), variableNode);
+                    }
+                }
+                else
+                {
+                    CSharpParser.ExpressionContext[] initExpressions = initContext.expression();
+                    foreach(CSharpParser.ExpressionContext expression in initExpressions)
+                        beginTreatExpression(expression, forNode);
+                }
+            }
+            
+            // Creating sub tree for the condition expression:
+            beginTreatExpression(statement.expression(), forNode);
+
+            // Creating sub tree for the iterator:
+            CSharpParser.For_iteratorContext iteratorContext = statement.for_iterator();
+            if (iteratorContext != null)
+            {
+                CSharpParser.ExpressionContext[] expressions = iteratorContext.expression();
+                foreach (CSharpParser.ExpressionContext expression in expressions)
+                    beginTreatExpression(expression, forNode);
+            }
             
             // Craeting sub tree and scope for the list of statements:
             CSharpParser.Embedded_statementContext embedded = statement.embedded_statement();
@@ -354,7 +404,7 @@ namespace CSharp_Compiler.Semantics
         {
             // Creating node indicating it's a foreach statement:
             IToken foreachToken = statement.FOREACH().Symbol;
-            Node foreachNode = new Node(foreachNode, Node.Kind.ForeachStatement, null);
+            Node foreachNode = new Node(foreachToken, Node.Kind.ForeachStatement, null);
             ast.AddNode(foreachNode);
             int foreachIndex = ast.NodeIndex(foreachNode);
             parentNode.AddChildIndex(foreachIndex);
@@ -371,7 +421,8 @@ namespace CSharp_Compiler.Semantics
             int iteratorIndex = ast.NodeIndex(iteratorNode);
             foreachNode.AddChildIndex(iteratorIndex);
 
-            // TODO: Treat the expression that returns the iterable
+            // Treat the expression that returns the iterable
+            beginTreatExpression(statement.expression(), foreachNode);
 
             // Creating sub tree and scope for the list of statements:
             CSharpParser.Embedded_statementContext embedded = statement.embedded_statement();
