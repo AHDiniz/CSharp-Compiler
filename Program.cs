@@ -39,6 +39,8 @@ namespace CSharp_Compiler
             ASTBuilder astBuilder = new ASTBuilder(ast, symbolTable);
 
             ParseTreeWalker.Default.Walk(astBuilder, tree);
+
+            ast.Print();
         }
     }
 }

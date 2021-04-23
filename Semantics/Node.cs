@@ -105,5 +105,15 @@ namespace CSharp_Compiler.Semantics
         {
             children.Add(index);
         }
+
+        public void Print(List<Node> nodeList)
+        {
+            Console.Write(token.Text + "( ");
+            foreach (int index in children)
+            {
+                nodeList[index].Print(nodeList);
+            }
+            Console.Write(" ) ");
+        }
     }
 }

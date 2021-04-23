@@ -42,5 +42,11 @@ namespace CSharp_Compiler.Semantics
             }
             return null;
         }
+
+        public void Print()
+        {
+            nodes[head].Print(nodes);
+            Console.Write("\n");
+        }
     }
 }
