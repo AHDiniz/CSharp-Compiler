@@ -37,7 +37,7 @@ namespace CSharp_Compiler.Semantics
             Type expressionType = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de child node
             
-            if (!context.assignment().IsEmpty)
+            if (context.assignment() != null)
             {
                 childTreat = treatExpressionAssignment(context.assignment());
                 expressionType = childTreat.tipo;
@@ -109,7 +109,7 @@ namespace CSharp_Compiler.Semantics
             Type currentType = null;
             Node currentNode = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
-            if (!context.lambda_expression().IsEmpty)
+            if (context.lambda_expression() != null)
             {
                 //childTreat = treatLambdaExpression(context.lambda_expression());
                 //currentType = childTreat.tipo;
@@ -118,7 +118,7 @@ namespace CSharp_Compiler.Semantics
                 //adicionando child
                 //currentNode.AddChildIndex(childTreat.ChildNodeIndex);
             }
-            else if (!context.query_expression().IsEmpty)
+            else if (context.query_expression() != null)
             {
                 /*
                 childTreat = treatQueryExpression(context.query_expression());
@@ -256,7 +256,7 @@ namespace CSharp_Compiler.Semantics
             Node currentNode = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
 
-            if (!context.right_shift_assignment().IsEmpty)
+            if (context.right_shift_assignment() != null)
             {
                 childTreat = treatRightShiftAssignment(context.right_shift_assignment());
                 currentType = childTreat.tipo;
@@ -339,19 +339,22 @@ namespace CSharp_Compiler.Semantics
             Node currentNode = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
 
-            token = context.OP_COALESCING().Symbol;
-            if (!context.null_coalescing_expression().IsEmpty)
+            if (context.OP_COALESCING() != null)
             {
-                childTreat = treatCoalescingExpression(context.null_coalescing_expression());
-                if (childTreat.tipo != null)
+                token = context.OP_COALESCING().Symbol;
+                if (context.null_coalescing_expression() != null)
                 {
-                    currentType = childTreat.tipo;
+                    childTreat = treatCoalescingExpression(context.null_coalescing_expression());
+                    if (childTreat.tipo != null)
+                    {
+                        currentType = childTreat.tipo;
+                    }
+                    currentNode = new Node(token, currentKind, currentType);
+                    ast.AddNode(currentNode);
+                    currentNode.AddChildIndex(childTreat.ChildNodeIndex);
+                    childTreat = treatConditionalOrExpression(context.conditional_or_expression());
+                    currentNode.AddChildIndex(childTreat.ChildNodeIndex);
                 }
-                currentNode = new Node(token, currentKind, currentType);
-                ast.AddNode(currentNode);
-                currentNode.AddChildIndex(childTreat.ChildNodeIndex);
-                childTreat = treatConditionalOrExpression(context.conditional_or_expression());
-                currentNode.AddChildIndex(childTreat.ChildNodeIndex);
             }
             else
             {
@@ -373,24 +376,27 @@ namespace CSharp_Compiler.Semantics
             Node currentNode = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
             List<int> childIndex = new List<int>();
-            if (context.OP_OR()[0].Symbol != null)
+            if (context.OP_OR() != null)
             {
-                //mais de um
-                token = context.OP_OR()[0].Symbol;
-                foreach (CSharpParser.Conditional_and_expressionContext i in context.conditional_and_expression())
+                if (context.OP_OR()[0].Symbol != null)
                 {
-                    if (!i.IsEmpty)
+                    //mais de um
+                    token = context.OP_OR()[0].Symbol;
+                    foreach (CSharpParser.Conditional_and_expressionContext i in context.conditional_and_expression())
                     {
-                        childTreat = treatConditionalAndExpression(i);
-                        currentType = childTreat.tipo;
-                        childIndex.Add(childTreat.ChildNodeIndex);
+                        if (!i.IsEmpty)
+                        {
+                            childTreat = treatConditionalAndExpression(i);
+                            currentType = childTreat.tipo;
+                            childIndex.Add(childTreat.ChildNodeIndex);
+                        }
                     }
-                }
-                currentNode = new Node(token, currentKind, currentType);
-                ast.AddNode(currentNode);
-                foreach (int i in childIndex)
-                {
-                    childIndex.Add(i);
+                    currentNode = new Node(token, currentKind, currentType);
+                    ast.AddNode(currentNode);
+                    foreach (int i in childIndex)
+                    {
+                        childIndex.Add(i);
+                    }
                 }
             }
             else
@@ -411,24 +417,27 @@ namespace CSharp_Compiler.Semantics
             Node currentNode = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
             List<int> childIndex = new List<int>();
-            if (context.OP_AND()[0].Symbol != null)
+            if (context.OP_AND() != null)
             {
-                //mais de um
-                token = context.OP_AND()[0].Symbol;
-                foreach (CSharpParser.Inclusive_or_expressionContext i in context.inclusive_or_expression())
+                if (context.OP_AND()[0].Symbol != null)
                 {
-                    if (!i.IsEmpty)
+                    //mais de um
+                    token = context.OP_AND()[0].Symbol;
+                    foreach (CSharpParser.Inclusive_or_expressionContext i in context.inclusive_or_expression())
                     {
-                        childTreat = treatInclusiveOrExpression(i);
-                        currentType = childTreat.tipo;
-                        childIndex.Add(childTreat.ChildNodeIndex);
+                        if (!i.IsEmpty)
+                        {
+                            childTreat = treatInclusiveOrExpression(i);
+                            currentType = childTreat.tipo;
+                            childIndex.Add(childTreat.ChildNodeIndex);
+                        }
                     }
-                }
-                currentNode = new Node(token, currentKind, currentType);
-                ast.AddNode(currentNode);
-                foreach (int i in childIndex)
-                {
-                    childIndex.Add(i);
+                    currentNode = new Node(token, currentKind, currentType);
+                    ast.AddNode(currentNode);
+                    foreach (int i in childIndex)
+                    {
+                        childIndex.Add(i);
+                    }
                 }
             }
             else
@@ -449,24 +458,27 @@ namespace CSharp_Compiler.Semantics
             Node currentNode = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
             List<int> childIndex = new List<int>();
-            if (context.BITWISE_OR()[0].Symbol != null)
+            if (context.BITWISE_OR() != null)
             {
-                //mais de um
-                token = context.BITWISE_OR()[0].Symbol;
-                foreach (CSharpParser.Exclusive_or_expressionContext i in context.exclusive_or_expression())
+                if (context.BITWISE_OR()[0].Symbol != null)
                 {
-                    if (!i.IsEmpty)
+                    //mais de um
+                    token = context.BITWISE_OR()[0].Symbol;
+                    foreach (CSharpParser.Exclusive_or_expressionContext i in context.exclusive_or_expression())
                     {
-                        childTreat = treatExclusiveOrExpression(i);
-                        currentType = childTreat.tipo;
-                        childIndex.Add(childTreat.ChildNodeIndex);
+                        if (!i.IsEmpty)
+                        {
+                            childTreat = treatExclusiveOrExpression(i);
+                            currentType = childTreat.tipo;
+                            childIndex.Add(childTreat.ChildNodeIndex);
+                        }
                     }
-                }
-                currentNode = new Node(token, currentKind, currentType);
-                ast.AddNode(currentNode);
-                foreach (int i in childIndex)
-                {
-                    childIndex.Add(i);
+                    currentNode = new Node(token, currentKind, currentType);
+                    ast.AddNode(currentNode);
+                    foreach (int i in childIndex)
+                    {
+                        childIndex.Add(i);
+                    }
                 }
             }
             else
@@ -487,24 +499,27 @@ namespace CSharp_Compiler.Semantics
             Node currentNode = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
             List<int> childIndex = new List<int>();
-            if (context.CARET()[0].Symbol != null)
+            if (context.CARET() != null)
             {
-                //mais de um
-                token = context.CARET()[0].Symbol;
-                foreach (CSharpParser.And_expressionContext i in context.and_expression())
+                if (context.CARET()[0].Symbol != null)
                 {
-                    if (!i.IsEmpty)
+                    //mais de um
+                    token = context.CARET()[0].Symbol;
+                    foreach (CSharpParser.And_expressionContext i in context.and_expression())
                     {
-                        childTreat = treatAndExpression(i);
-                        currentType = childTreat.tipo;
-                        childIndex.Add(childTreat.ChildNodeIndex);
+                        if (!i.IsEmpty)
+                        {
+                            childTreat = treatAndExpression(i);
+                            currentType = childTreat.tipo;
+                            childIndex.Add(childTreat.ChildNodeIndex);
+                        }
                     }
-                }
-                currentNode = new Node(token, currentKind, currentType);
-                ast.AddNode(currentNode);
-                foreach (int i in childIndex)
-                {
-                    childIndex.Add(i);
+                    currentNode = new Node(token, currentKind, currentType);
+                    ast.AddNode(currentNode);
+                    foreach (int i in childIndex)
+                    {
+                        childIndex.Add(i);
+                    }
                 }
             }
             else
@@ -525,24 +540,27 @@ namespace CSharp_Compiler.Semantics
             Node currentNode = null;
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
             List<int> childIndex = new List<int>();
-            if (context.AMP()[0].Symbol != null)
+            if (context.AMP() != null)
             {
-                //mais de um
-                token = context.AMP()[0].Symbol;
-                foreach (CSharpParser.Equality_expressionContext i in context.equality_expression())
+                if (context.AMP()[0].Symbol != null)
                 {
-                    if (!i.IsEmpty)
+                    //mais de um
+                    token = context.AMP()[0].Symbol;
+                    foreach (CSharpParser.Equality_expressionContext i in context.equality_expression())
                     {
-                        childTreat = treatEqualityExpression(i);
-                        currentType = childTreat.tipo;
-                        childIndex.Add(childTreat.ChildNodeIndex);
+                        if (!i.IsEmpty)
+                        {
+                            childTreat = treatEqualityExpression(i);
+                            currentType = childTreat.tipo;
+                            childIndex.Add(childTreat.ChildNodeIndex);
+                        }
                     }
-                }
-                currentNode = new Node(token, currentKind, currentType);
-                ast.AddNode(currentNode);
-                foreach (int i in childIndex)
-                {
-                    childIndex.Add(i);
+                    currentNode = new Node(token, currentKind, currentType);
+                    ast.AddNode(currentNode);
+                    foreach (int i in childIndex)
+                    {
+                        childIndex.Add(i);
+                    }
                 }
             }
             else
@@ -551,9 +569,6 @@ namespace CSharp_Compiler.Semantics
                 currentNode = ast.GetNode(childTreat.ChildNodeIndex);
                 currentType = childTreat.tipo;
             }
-            return (ast.NodeIndex(currentNode), currentType);
-
-
             return (ast.NodeIndex(currentNode), currentType);
         }
 
@@ -567,29 +582,30 @@ namespace CSharp_Compiler.Semantics
             (int ChildNodeIndex, Type tipo) childTreat; //tipo e index de cada child
             List<int> childIndex = new List<int>();
 
-            if (context.OP_EQ()[0].Symbol!=null || context.OP_NE()[0].Symbol != null)
+            if (context.OP_EQ() != null || context.OP_NE() != null)
             {
-                //mais de um
-                if (context.OP_EQ()[0].Symbol != null)
+                if (context.OP_EQ()[0].Symbol!=null || context.OP_NE()[0].Symbol != null)
                 {
-                    token = context.OP_EQ()[0].Symbol;
-                }else token = context.OP_NE()[0].Symbol;
-                foreach (CSharpParser.Relational_expressionContext i in context.relational_expression())
-                {
-                    if (!i.IsEmpty)
+                    //mais de um
+                    if (context.OP_EQ()[0].Symbol != null) token = context.OP_EQ()[0].Symbol;
+                    else token = context.OP_NE()[0].Symbol;
+                    foreach (CSharpParser.Relational_expressionContext i in context.relational_expression())
                     {
-                        childTreat = treatRelationalExpression(i);
-                        currentType = childTreat.tipo;
-                        childIndex.Add(childTreat.ChildNodeIndex);
+                        if (!i.IsEmpty)
+                        {
+                            childTreat = treatRelationalExpression(i);
+                            currentType = childTreat.tipo;
+                            childIndex.Add(childTreat.ChildNodeIndex);
+                        }
                     }
-                }
-                currentNode = new Node(token, currentKind, currentType);
-                ast.AddNode(currentNode);
-                foreach (int i in childIndex)
-                {
-                    childIndex.Add(i);
-                }
+                    currentNode = new Node(token, currentKind, currentType);
+                    ast.AddNode(currentNode);
+                    foreach (int i in childIndex)
+                    {
+                        childIndex.Add(i);
+                    }
 
+                }
             }
 
             return (ast.NodeIndex(currentNode), currentType);
