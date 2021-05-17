@@ -110,6 +110,19 @@ namespace CSharp_Compiler.Semantics
             mainScope = new Scope(-1);
             types = new List<Type>();
             currentScope = mainScope;
+            
+            this.AddSymbol(
+                new Antlr4.Runtime.CommonToken(0, "System"),
+                new MethodSymbol(Symbol.ModifierFlag.None, null)
+                );
+            this.AddSymbol(
+                new Antlr4.Runtime.CommonToken(0, "Console"),
+                new MethodSymbol(Symbol.ModifierFlag.None, null)
+                );
+            this.AddSymbol(
+                new Antlr4.Runtime.CommonToken(0, "WriteLine"),
+                new MethodSymbol(Symbol.ModifierFlag.None, null)
+                );
         }
 
         public void EnterScope(int nodeIndex)

@@ -378,7 +378,7 @@ namespace CSharp_Compiler.Semantics
             List<int> childIndex = new List<int>();
             if (context.OP_OR() != null)
             {
-                if (context.OP_OR()[0].Symbol != null)
+                if (context.OP_OR().Length > 0 && context.OP_OR()[0].Symbol != null)
                 {
                     //mais de um
                     token = context.OP_OR()[0].Symbol;
